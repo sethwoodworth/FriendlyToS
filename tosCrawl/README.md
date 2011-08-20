@@ -5,7 +5,8 @@ Naive crawler that looks for things that seem to be ToS'
 
  * TODO: decide method of crawl list (Alexa?)
 
-features:
+Features:
+
  * given domain, find ToS'
     find ToS' by url guessing (try sitemap)
     find ToS' by parsing domain front page
