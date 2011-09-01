@@ -17,5 +17,6 @@ Features:
  * Note/ branch relationship to other entities
     * Self Regulation bodies (IAB, DMA(?), add more)
     * Non-consumer facing data brokers
+    * 3rd party trackers (see Ghostery for list)
  * other xml/metadata (P3P)
  * Grab/save cookies (or make note of who provided them)

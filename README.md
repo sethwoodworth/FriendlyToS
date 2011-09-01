@@ -18,9 +18,13 @@ TODOs
    * type up in spreadsheet with extra fields of metadata
    * (i.e. "PREVENT use of cookies to send spam")
  * Initial Crawl list (source ToSBACK)
+   * Source for list of trackers: Ghostery
  * Decide if ToS diff engine is in tosWatch or tosGrokr
+ * Decide when a paragraph has changed enough to be considered a different paragraph instead of merly a revision of a paragraph.
+ * Decide if and how comments on a paragraph will relate to later versions of that paragraph.
 
 ### Database ###
+Database diagram at https://cacoo.com/diagrams/DFHkFqrvdvr863xi
 TODO: finish db schema (draft 1)
 TODO: decide what tool implements database schema
 TODO: research South for db migrations
