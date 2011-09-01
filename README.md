@@ -25,6 +25,7 @@ TODOs
 
 ### Database ###
 Database diagram at https://cacoo.com/diagrams/DFHkFqrvdvr863xi
+
 TODO: finish db schema (draft 1)
 TODO: decide what tool implements database schema
 TODO: research South for db migrations
