@@ -47,8 +47,14 @@ TODO: research South for db migrations
 Notes & Bookmarks
 =================
 Javascript Runtimes:
- * code.google.com/p/python-spidermonkey/
- * http://www.mozilla.org/rhino/runtime.html
+
+ * http://code.google.com/p/python-spidermonkey/ - Python module based on SpiderMonkey
+   * Possible issue: Doesn't provide useful error feedback from Javascript execution
+   * Possible issue: Can't call functions defiend in javascript (WTF?? how does it do anything then?)
+   * Coolness: Smooth transition of objects to/from Javascript
+   * TODO: Install and play around with it.
+ * https://developer.mozilla.org/en/SpiderMonkey - C/C++ Javascript runtime
+ * http://www.mozilla.org/rhino/ - This is for Java
 
 Future Blog Content Ideas:
     Discussing history of law, some background on privacy policies, policy analysis of various new laws/cases/etc..., some background of privacy theory
