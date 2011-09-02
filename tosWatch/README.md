@@ -6,10 +6,11 @@ ToS Watch, checks Terms of Services for changes.  It is a scraping engine that h
 A Python project that calls Javascript to parse html, probably.
 
 Determining if a paragraph from a new version matches a paragraph of the previous version
+
 ```
- Compare checksums of policyVersions. 
+ Compare checksums of policyVersions.  
    If same, no change -> log no change & return
-   If different, compare checksums for each paragraph
+   If different -> compare checksums for each paragraph
      If same, no change
      If different -> log paragraph i changed & add to list of changed paragraphs
    For each paragraph in list of changed paragraphs
