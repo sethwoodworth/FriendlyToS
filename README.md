@@ -48,7 +48,8 @@ Notes & Bookmarks
 =================
 Javascript Runtimes:
 
- * http://code.google.com/p/python-spidermonkey/ - Python module based on SpiderMonkey
+ * https://github.com/davisp/python-spidermonkey/  - Python module based on SpiderMonkey
+   * Bug tracking and old code/instructions at http://code.google.com/p/python-spidermonkey/
    * Possible issue: Doesn't provide useful error feedback from Javascript execution
    * Possible issue: Can't call functions defiend in javascript (WTF?? how does it do anything then?)
    * Coolness: Smooth transition of objects to/from Javascript
