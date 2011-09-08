@@ -20,3 +20,13 @@ Features:
     * 3rd party trackers (see Ghostery for list)
  * other xml/metadata (P3P)
  * Grab/save cookies (or make note of who provided them)
+
+### Logic
+ * Compare checksums of policyVersions.
+   * If same, no change -> log no change & return
+   * If different -> compare checksums for each paragraph
+      * If same, no change
+      * If different -> log paragraph i changed & add to list of changed paragraphs
+   * For each paragraph in list of changed paragraphs
+      * If relative position of new text matches relative position of prevoius text && have X% same content -> same paragraph with new version
+   * Move forward comments on any paragraphs that are unchanged or have new version
