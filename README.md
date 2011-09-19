@@ -46,6 +46,19 @@ TODO: research South for db migrations
 
 Notes & Bookmarks
 =================
+Python Parsing:
+lxml - http://lxml.de/ - looks like a possible solution for building DOMs that can be queried via Xpath. I've had some success retreiving the content I want from a page, but more experimentation is needed.
+lxml supports at least three seperate parsers:
+ * libxml2 - The default
+ * BeautifulSoup - Via lxml.html.ElementSoup
+ * html5lib - For parsing HTML 5, via lxml.html.html5parser
+
+There are some functions/methods in Lxml that might be of interest:
+ * lxml.html.HtmlElement.interlinks() - Returns (element, attribute, link, pos) for every link in the element
+ * lxml.html.diff.htmldiff(doc1, doc2) - A diff function that wraps differences in <ins> and <del> elements
+ * lxml.html.diff.html_annotate - Another diff function that behaves like svn blame
+ * See http://lxml.de/lxmlhtml.html#html-diff the above two
+
 Javascript Runtimes:
 
  * https://github.com/davisp/python-spidermonkey/  - Python module based on SpiderMonkey
