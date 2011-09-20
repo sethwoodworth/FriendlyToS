@@ -1,36 +1,38 @@
 # Testing lxml and urllib here. 
 #
-# Have been successful in scraping desired content when a page is retrieved 
-# via the lxml.html.parse function. However, I don't know how lxml retrieves
-# pages, or if that retreival method can be customized to the level we need,
-# including setting the agent string and grabbing cookies. I suspect lxml might
-# rely on urllib, but at this point I don't know.
-#
-# Had some trouble feeding lxml.html.parse the results of urllib.urlopen, but
-# most recently I have been successful with the fetchViaUrllib function below.
-# For some reason, downloading a page via urllib and feeding either the 
-# resulting object or the result's string to parse() or document_fromstring()
-# yielded a parsing error before.
-#
 # Requires lxml - install via http://lxml.de/installation.html#installation or 
 # your distro's package manager
 #
 # .xpath(query) will return a list of lxml.html.HtmlElement
 #
 # TODO: Proper error handling
+#	    Check out parser.error_log
+#       Put scraped data into the db
 
 # Eventually pull these from the DB
-url = 'http://info.yahoo.com/legal/us/yahoo/utos/utos-173.html'
-xpathQuery = '/html/body/div/div[4]/div/div/div' 	# Thanks Firebug
+urls = { 
+	'yahoo' : 'http://info.yahoo.com/legal/us/yahoo/utos/utos-173.html',
+	'facebook' : 'http://www.facebook.com/terms.php',
+	'lulz' : 'http://www.thisaddressdoesnexistnewbplanker.com'
+	}
+xpaths = {
+	'yahoo' : '/html/body/div/div[4]/div/div/div',
+	'facebook' : '/html/body/div[3]/div/div/div[2]/div/div'
+	}
+ 	# Thanks Firebug
 
     
-import lxml.html
+from lxml import html
 
-def fetchViaLxml(url):
-    tosDom = lxml.html.parse(url)
+# Function for testing retrieval via lxml. I think this will be dropped, since
+# retrieving via urllib is more flexible in terms of agent string, error/status
+# handling, cookies, etc...
+def fetchViaLxml(url, xpathQuery):
+    tosDom = html.parse(url)
     return tosDom.xpath(xpathQuery)
     
-def fetchViaUrllib(url):
+# Function for testing lxml and retrieval via urllib.
+def fetchViaUrllib(url, xpathQuery):
     import urllib
     
     # Need to set the agentString, as some sites get snotty with uncommon agents
@@ -44,7 +46,7 @@ def fetchViaUrllib(url):
     # Retreive and try to build a tree
     try:
         tosDoc = urllib.urlopen(url)
-	tosDom = lxml.html.parse(tosDoc)
+	tosDom = html.parse(tosDoc)
         tosDoc.close()
 	return tosDom.xpath(xpathQuery)
     except IOError as e:
