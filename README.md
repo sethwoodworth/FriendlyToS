@@ -44,6 +44,23 @@ TODO: research South for db migrations
         fkey > user
         fkey > paragraph_id
 
+### Logging ###
+Use <a href="https://docs.djangoproject.com/en/1.3/topics/logging/">Django's logging</a>, which is basically just <a href="http://docs.python.org/library/logging.html">Python's logging</a> with a couple of added methods.
+
+Django and Python both do not provide a handler for logging to a database, so we'll need to write that.
+
+Need to define log formats and the <a href="https://docs.djangoproject.com/en/1.3/topics/logging/#configuring-logging">dictConfig</a>
+
+We should define what happens for each log level, and when they are used in FriendlyToS:
+
+ * critical - use DB and AdminEmailHandler handlers
+ * error - use DB handler
+ * warning - use DB handler
+ * info - use DB handler
+ * debug - ???
+
+Should filter for DB messages and send those to a file.
+
 Notes & Bookmarks
 =================
 Python Parsing:
