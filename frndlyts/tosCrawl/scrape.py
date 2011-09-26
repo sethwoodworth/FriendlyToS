@@ -83,10 +83,17 @@ def fetchViaUrllib(url, xpathQuery):
 
 def checkDocuments():
     for doc,url in urls.items():
-	if doc == 'lulz': continue
+        if doc == 'lulz': continue
 	print "Trying " + doc + ".....\t",
 	results = fetchViaUrllib(url, xpaths[doc])
 	if len(results) == 1: print "Success"
 	elif len(results) == 0: print "FAIL"
 	else: print "Multiple Results"
+
+def sentence():
+
+def paragraph():
+
+def document(tosDom):
+    
 
