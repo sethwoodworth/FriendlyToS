@@ -107,3 +107,10 @@ A message (ScrapeError ?) should be generated when html.parse returns an empty l
 **Future Blog Content Ideas**
 
 Discussing history of law, some background on privacy policies, policy analysis of various new laws/cases/etc..., some background of privacy theory
+
+
+**Important Laws and Statutes**
+
+ * Communications Decency Act
+ * DMCA
+ * Video Privacy Protection Act
