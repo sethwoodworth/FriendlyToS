@@ -49,6 +49,7 @@ xpaths = {
     }
     # Thanks Firebug
 
+
 from lxml import html
 
 # Function for testing retrieval via lxml. I think this will be dropped, since
@@ -181,7 +182,6 @@ def foo():
 def dumbFoo():
     from lxml.html import fromstring
     return fromstring('<div>Hello there <a href="http://www.google.com">Google</a></div>')
-
 
 
 results = foo()
