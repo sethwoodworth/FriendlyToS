@@ -18,6 +18,7 @@ Features:
     * Self Regulation bodies (IAB, DMA(?), add more)
     * Non-consumer facing data brokers
     * 3rd party trackers (see Ghostery for list)
+ * facebook and ddg note 'stated last change' on their TOS page "Date of Last Revision: April 26, 2011."
  * other xml/metadata (P3P)
  * Grab/save cookies (or make note of who provided them)
 
