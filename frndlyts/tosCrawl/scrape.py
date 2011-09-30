@@ -94,85 +94,105 @@ def checkDocuments():
 # HTML -> Markdown translation functions
 # All of these functions, except for the ul and ol functions, assume that the
 # provided element does not have child elements.
-translate = dict()
+prepend = ""
+translater = dict()
 
-translate['li'] = lambda(el) : "" + el.text_content() + "\n"
+translater['li'] = lambda(el) : "" + el.text_content() + "\n"
 
-def translate_ul(el, prepend=""):
+def translate_ul(el):
+    global prepend
     out = ""
-    for child in el.iter():
+    for child in el.iterchildren():
         out += prepend + " * "
         if child.tag == 'li':
-            out += translate['li'](child)
+            out += translate(child)
         elif child.tag == 'ul':
-            out += translate['ul'](child, prepend + "  ")
+            prepend += "  "
+            out += translater['ul'](child)
+            prepend = prepend[:-2]
         elif child.tag == 'ol':
-            out += translate['ol'](child, prepend + "  ")
+            prepend += "  "
+            out += translater['ol'](child)
+            prepend = prepend[:-2]
         else :
-            out += translate[child.tag]
+            out += translater[child.tag]
     out += "\n"
-    return out
+    el.text = out
+    el.drop_tag()
+    return el.text_content()
 
-def translate_ol(el, prepend=""):
+translater['ul'] = translate_ul
+
+def translate_ol(el):
+    global prepend
     out = ""
     i = 1
-    for child in el.iter():
-        out += prepend + i + ". "
+    for child in el.iterchildren():
+        out += prepend + `i` + ". "
         i += 1
         if child.tag == 'li':
-            out += translate['li'](child)
+            out += translate(child)
         elif child.tag == 'ol':
-            out += translate['ol'](child, prepend + "  ")
+            prepend += "  "
+            out += translater['ol'](child)
+            prepend = prepend[:-2]
         elif child.tag == 'ul':
-            out += translate['ul'](child, prepend + "  ")
+            prepend += "  "
+            out += translater['ul'](child)
+            prepend = prepend[:-2]
     out += "\n"
     return out
 
-translate['ol'] = translate_ol
+translater['ol'] = translate_ol
 
-translate['a'] = lambda(el) : "[" + el.attrib['href'] + "](" + el.text_content() + ")"
+translater['a'] = lambda(el) : "[" + el.attrib['href'] + "](" + el.text_content() + ")"
 
-translate['br'] = lambda(el) : "\n\n"
+translater['br'] = lambda(el) : "\n\n"
 
 # <p> and <div> are the samething for this transpation
-translate['p'] = lambda(el) : el.text_content() + "\n\n"
-translate['div'] = translate['p']
+translater['p'] = lambda(el) : el.text_content() + "\n\n"
+translater['div'] = translater['p']
 
-translate['span'] = lambda(el) : el.text_content()
+translater['span'] = lambda(el) : el.text_content()
 
 # <b> and <strong> are the same
-translate['b'] = lambda(el) : "**" + el.text_content() + "**"
-translate['strong'] = translate['b']
+translater['b'] = lambda(el) : "**" + el.text_content() + "**"
+translater['strong'] = translater['b']
 
 # <i> and <em> are the same
-translate['i'] = lambda(el) : "*" + el.text_content() + "*"
-translate['em'] = translate['i']
+translater['i'] = lambda(el) : "*" + el.text_content() + "*"
+translater['em'] = translater['i']
 
-translate['img'] = lambda(el) : "![" + el.attrib['alt'] + "](" + el.attrib['src'] + ")"
+translater['img'] = lambda(el) : "![" + el.attrib['alt'] + "](" + el.attrib['src'] + ")"
 
-translate['h1'] = lambda(el) : "#" + el.text_content() + "#"
-translate['h2'] = lambda(el) : "##" + el.text_content() + "##"
-translate['h3'] = lambda(el) : "###" + el.text_content() + "###"
-translate['h4'] = lambda(el) : "####" + el.text_content() + "####"
-translate['h5'] = lambda(el) : "#####" + el.text_content() + "#####"
-translate['h6'] = lambda(el) : "######" + el.text_content() + "######"
+translater['h1'] = lambda(el) : "#" + el.text_content() + "#"
+translater['h2'] = lambda(el) : "##" + el.text_content() + "##"
+translater['h3'] = lambda(el) : "###" + el.text_content() + "###"
+translater['h4'] = lambda(el) : "####" + el.text_content() + "####"
+translater['h5'] = lambda(el) : "#####" + el.text_content() + "#####"
+translater['h6'] = lambda(el) : "######" + el.text_content() + "######"
 
 # Probably need to add more to the <pre> function
-translate['pre'] = lambda(el) : el.text_content().replace("\n", " ") + "\n\n"
+translater['pre'] = lambda(el) : el.text_content().replace("\n", " ") + "\n\n"
 
-# / Translate functions
+# / Translater functions
 
 # Function called by others to translate an lxml.html.HTMLElement into a string
 # of Markdown
 def translate(el):
-    print "Tag " + el.tag 
+    print prepend + "Tag " + el.tag 
+    print prepend + "Number of children: " + `len(el)`
     out = ""
-    if el.tag == 'ol' : return translate['ol'](el)
-    elif el.tag == 'ul' : return translate['ul'](el)
-    elif len(el) == 0 : return translate[child.tag](el)
-    for child in el.iter():
-        child.text = translate(child)
-        child.drop_tag()
+    if el.tag == 'ol' : return translater['ol'](el)
+    elif el.tag == 'ul' : return translater['ul'](el)
+    else :
+        for child in el.iterchildren():
+            print prepend + "Child tag: " + child.tag
+            child.text = translate(child)
+            child.drop_tag()
+        if len(el) == 0 : 
+            print prepend + "calling '" + el.tag + "' translater"
+            return translater[el.tag](el)
     return el.text_content()
 
 # Just for testing things out and cause I'm sick of retying this all the time.
@@ -183,6 +203,11 @@ def dumbFoo():
     from lxml.html import fromstring
     return fromstring('<div>Hello there <a href="http://www.google.com">Google</a></div>')
 
+def ulFoo():
+    from lxml.html import fromstring
+    return fromstring('<ul><li>Hi, this is a list</li><li>with <a href="http://www.wbushey.com">AWESOME LINKS!!!</a></li><li>and <span>text spanning many elements</span></li></ul>')
+
 
 results = foo()
 dumbDom = dumbFoo()
+ulDom = ulFoo()
