@@ -27,6 +27,7 @@ urls = {
     'Twitter PP' : 'https://twitter.com/privacy',
     'Twitter ToS' : 'https://twitter.com/tos',
     'Yahoo' : 'http://info.yahoo.com/legal/us/yahoo/utos/utos-173.html',
+    'DuckDuckGo' : 'https://duckduckgo.com/privacy.html',
     'lulz' : 'http://www.thisaddressdoesnexistnewbplanker.com'
     }
 xpaths = {
@@ -45,6 +46,7 @@ xpaths = {
     'Safari Books Online ToS' : '//*[@id="mainContent"]',
     'Twitter PP' : '/html/body/div[2]/div/div',
     'Twitter ToS' : '/html/body/div[2]/div/div',
+    'DuckDuckGo' : '/html/body/div#c/div#t', # maybe wrong or incomplete
     'Yahoo' : '/html/body/div/div[4]/div/div/div'
     }
     # Thanks Firebug

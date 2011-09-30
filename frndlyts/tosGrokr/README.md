@@ -17,3 +17,6 @@ TODOs
 =====
 * TODO: Create goal words list
 * TODO: Create goal/vulnerability list
+
+### Approach
+Once I have a goal list with synonyms, I can see how ambigious NP VP(v pp) looks
