@@ -3,6 +3,11 @@ tosCrawl
 
 Naive crawler that looks for things that seem to be ToS'
 
+ * TODO: Unit Testing on Translator
+ * TODO: Split translated text into sentences and paragraphs
+ * TODO: Save sentences and paragraphs to DB
+ * TODO: Save raw HTML to file
+ * TODO: Save raw HTML to github (eventual awesomeness)
  * TODO: decide method of crawl list (Alexa?)
 
 Features:

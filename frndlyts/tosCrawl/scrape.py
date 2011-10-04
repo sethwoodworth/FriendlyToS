@@ -53,6 +53,8 @@ xpaths = {
 
 
 from lxml import html
+from MarkdownTranslator import MarkdownTranslator
+
 
 # Function for testing retrieval via lxml. I think this will be dropped, since
 # retrieving via urllib is more flexible in terms of agent string, error/status
@@ -92,111 +94,6 @@ def checkDocuments():
         elif len(results) == 0: print "FAIL"
         else: print "Multiple Results"
 
-
-# HTML -> Markdown translation functions
-# All of these functions, except for the ul and ol functions, assume that the
-# provided element does not have child elements.
-prepend = ""
-translater = dict()
-
-translater['li'] = lambda(el) : "" + el.text_content() + "\n"
-
-def translate_ul(el):
-    global prepend
-    out = ""
-    for child in el.iterchildren():
-        out += prepend + " * "
-        if child.tag == 'li':
-            out += translate(child)
-        elif child.tag == 'ul':
-            prepend += "  "
-            out += translater['ul'](child)
-            prepend = prepend[:-2]
-        elif child.tag == 'ol':
-            prepend += "  "
-            out += translater['ol'](child)
-            prepend = prepend[:-2]
-        else :
-            out += translater[child.tag]
-    out += "\n"
-    el.text = out
-    el.drop_tag()
-    return el.text_content()
-
-translater['ul'] = translate_ul
-
-def translate_ol(el):
-    global prepend
-    out = ""
-    i = 1
-    for child in el.iterchildren():
-        out += prepend + `i` + ". "
-        i += 1
-        if child.tag == 'li':
-            out += translate(child)
-        elif child.tag == 'ol':
-            prepend += "  "
-            out += translater['ol'](child)
-            prepend = prepend[:-2]
-        elif child.tag == 'ul':
-            prepend += "  "
-            out += translater['ul'](child)
-            prepend = prepend[:-2]
-    out += "\n"
-    return out
-
-translater['ol'] = translate_ol
-
-translater['a'] = lambda(el) : "[" + el.attrib['href'] + "](" + el.text_content() + ")"
-
-translater['br'] = lambda(el) : "\n\n"
-
-# <p> and <div> are the samething for this transpation
-translater['p'] = lambda(el) : el.text_content() + "\n\n"
-translater['div'] = translater['p']
-
-translater['span'] = lambda(el) : el.text_content()
-
-# <b> and <strong> are the same
-translater['b'] = lambda(el) : "**" + el.text_content() + "**"
-translater['strong'] = translater['b']
-
-# <i> and <em> are the same
-translater['i'] = lambda(el) : "*" + el.text_content() + "*"
-translater['em'] = translater['i']
-
-translater['img'] = lambda(el) : "![" + el.attrib['alt'] + "](" + el.attrib['src'] + ")"
-
-translater['h1'] = lambda(el) : "#" + el.text_content() + "#"
-translater['h2'] = lambda(el) : "##" + el.text_content() + "##"
-translater['h3'] = lambda(el) : "###" + el.text_content() + "###"
-translater['h4'] = lambda(el) : "####" + el.text_content() + "####"
-translater['h5'] = lambda(el) : "#####" + el.text_content() + "#####"
-translater['h6'] = lambda(el) : "######" + el.text_content() + "######"
-
-# Probably need to add more to the <pre> function
-translater['pre'] = lambda(el) : el.text_content().replace("\n", " ") + "\n\n"
-
-# / Translater functions
-
-# Function called by others to translate an lxml.html.HTMLElement into a string
-# of Markdown
-def translate(el):
-    print prepend + "Tag " + el.tag 
-    print prepend + "Number of children: " + `len(el)`
-    out = ""
-    if el.tag == 'ol' : return translater['ol'](el)
-    elif el.tag == 'ul' : return translater['ul'](el)
-    else :
-        for child in el.iterchildren():
-            print prepend + "Child tag: " + child.tag
-            child.text = translate(child)
-            child.drop_tag()
-        if len(el) == 0 : 
-            print prepend + "calling '" + el.tag + "' translater"
-            return translater[el.tag](el)
-    return el.text_content()
-
 # Just for testing things out and cause I'm sick of retying this all the time.
 def foo():
     return fetchViaUrllib(urls['Facebook'], xpaths['Facebook'])
@@ -207,9 +104,10 @@ def dumbFoo():
 
 def ulFoo():
     from lxml.html import fromstring
-    return fromstring('<ul><li>Hi, this is a list</li><li>with <a href="http://www.wbushey.com">AWESOME LINKS!!!</a></li><li>and <span>text spanning many elements</span></li></ul>')
+    return fromstring('<ul><li>Hi, this is a list</li>\n<li>with <a href="http://www.wbushey.com">AWESOME LINKS!!!</a></li><li>and <span>text spanning many elements</span></li></ul>')
 
 
 results = foo()
 dumbDom = dumbFoo()
 ulDom = ulFoo()
+t = MarkdownTranslator(True)
