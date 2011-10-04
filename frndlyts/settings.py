@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         # Sqlite during development, replace.
-        'ENGINE': 'django.db.backends.sqlite',
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'temp.sql',
         'USER': '',
         'PASSWORD': '',
@@ -98,15 +98,17 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django.contrib.admindocs',
+    #'django.contrib.admindocs',
 
     # Userena
     'guardian',
     'easy_thumbnails',
-    'userena',
+    #'userena', # disabled until we set it up
 
     # Local apps
     'tosview',
+    'tosPolicy',
+    'tosCrawl',
 )
 
 # A sample logging configuration. The only tangible logging
