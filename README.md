@@ -63,6 +63,8 @@ Should filter for DB messages and send those to a file.
 
 Notes & Bookmarks
 =================
+[Pro Bono Privacy Initiative](https://www.privacyassociation.org/publications/pro_bono_privacy_initiative_pilot_gets_underway) - Provides data privacy expertise to non-profits
+
 Python Parsing:
 lxml - http://lxml.de/ - looks like a possible solution for building DOMs that can be queried via Xpath. I've had some success retreiving the content I want from a page, but more experimentation is needed.
 
