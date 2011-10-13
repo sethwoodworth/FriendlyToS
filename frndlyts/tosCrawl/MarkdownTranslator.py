@@ -104,5 +104,10 @@ class MarkdownTranslator(object):
         # this element. Now all that is left is to translate the element
         # itself. 
         el.text = MarkdownTranslator.translator[el.tag](el)
+
+        # Lets play with encoding!
+        # TODO: Consider if there is a better place/way to handle this
+        el.text = el.text.replace(u'\xc2\xa0', '&nbsp;')
+
         return el.text
 

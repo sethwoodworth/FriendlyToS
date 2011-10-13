@@ -15,7 +15,8 @@ urls = {
     'AOL ToS' : 'http://legal.aol.com/terms-of-service/full-terms/',
     'Digg PP' : 'http://about.digg.com/privacy',
     'Digg ToS' : 'http://about.digg.com/terms-use',
-    'Facebook' : 'http://www.facebook.com/terms.php',
+    'Facebook ToS' : 'http://www.facebook.com/terms.php',
+    'Facebook PP' : 'http://www.facebook.com/full_data_use_policy',
     'Google PP' : 'http://www.google.com/intl/en/privacy/privacy-policy.html',
     'Google ToS' : 'http://www.google.com/accounts/TOS?hl=en',
     'Google Desktop' : 'http://desktop.google.com/privacypolicy.html',
@@ -39,7 +40,8 @@ xpaths = {
     'Google ToS' : '/html/body/table[2]/tbody/tr/td[4]/div',
     'Google Desktop' : '//*[@id="content"]',
     'Google Groups PP' : '/html/body/div/div[2]/div[2]',
-    'Facebook' : '/html/body/div[3]/div/div/div[2]/div/div',
+    'Facebook ToS' : '/html/body/div[3]/div/div/div[2]/div/div',
+    'Facebook PP' : '//*[@id="contentArea"]',
     'reddit PP' : '/html/body/div[3]/div/div[1]',
     'reddit ToS' : '/html/body/div[3]/div/div[1]',
     'Safari Books Online PP' : '//*[@id="mainContent"]',
@@ -55,21 +57,57 @@ xpaths = {
 from lxml import html
 from MarkdownTranslator import MarkdownTranslator
 
+def isNewVersion(tosDom):
+    return True
 
-# Function for testing retrieval via lxml. I think this will be dropped, since
-# retrieving via urllib is more flexible in terms of agent string, error/status
-# handling, cookies, etc...
-def fetchViaLxml(url, xpathQuery):
-    tosDom = html.parse(url)
-    return tosDom.xpath(xpathQuery)
+# Very hacky convience function for development/testing.
+def saveMdToDisk(md, filename):
+    import os.path, time
 
-# Function for testing lxml and retrieval via urllib.
-def fetchViaUrllib(url, xpathQuery):
+    filename = filename.replace(' ', '_') + '_' + time.strftime('%Y%m%d_%H%M')\
+        + '.md'
+
+    if os.path.isfile(filename):
+        return
+
+    f = open(filename, 'w')
+    f.write(md)
+    f.close()
+
+def saveHtmlToDisk(doc, filename):
+    import os.path, time
+
+    # Filename is augmented with the current datetime.
+    filename = filename.replace(' ', '_') + '_' + time.strftime('%Y%m%d_%H%M')\
+        + '.html'
+
+    if os.path.isfile(filename):
+        return
+
+    # Probably some efficency issues with buffers or what not that 
+    # I don't know about.
+    f = open(filename, 'w')
+    f.write(doc)
+    f.close()
+
+def fetchViaUrllib(key):
+    """
+        Fetches a webpage, saves the page to a file if the fetched page is a
+            new version, then searches the webpage for the corresponding
+            document element.
+
+        Input: A key for the urls/xpaths directories 
+        Output: A HtmlElement representing the element containing the text 
+            of interest
+        TODO: Probably brake this up eventually. May need to change the order of
+            new dom creation, version testing, file writing, etc...
+    """
     import urllib
 
     # Need to set the agentString, as some sites get snotty with uncommon agents
     class CrawlrURLOpener(urllib.FancyURLopener):
         version = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0a2) Gecko/20110613 Firefox/6.0a2"
+
     urllib._urlopen = CrawlrURLOpener()
 
     # urllib doesn't play well with https, so make sure we don't connect via
@@ -77,10 +115,13 @@ def fetchViaUrllib(url, xpathQuery):
 
     # Retreive and try to build a tree
     try:
-        tosDoc = urllib.urlopen(url)
-        tosDom = html.parse(tosDoc)
-        tosDoc.close()
-        return tosDom.xpath(xpathQuery)
+        socket = urllib.urlopen(urls[key])
+        tosDoc = socket.read()
+        socket.close()
+        tosDom = html.fromstring(tosDoc)
+        if isNewVersion(tosDom):
+            saveHtmlToDisk(tosDoc, key)
+        return tosDom.xpath(xpaths[key])
     except IOError as e:
         # Actually long a network error
         print "Something went wrong with the tubes"
@@ -96,7 +137,7 @@ def checkDocuments():
 
 # Just for testing things out and cause I'm sick of retying this all the time.
 def foo():
-    return fetchViaUrllib(urls['Facebook'], xpaths['Facebook'])
+    return fetchViaUrllib('Facebook ToS')
 
 def dumbFoo():
     from lxml.html import fromstring
@@ -105,7 +146,6 @@ def dumbFoo():
 def ulFoo():
     from lxml.html import fromstring
     return fromstring('<ul><li>Hi, this is a list</li>\n<li>with <a href="http://www.wbushey.com">AWESOME LINKS!!!</a></li><li>and <span>text spanning many elements</span></li></ul>')
-
 
 results = foo()
 dumbDom = dumbFoo()
