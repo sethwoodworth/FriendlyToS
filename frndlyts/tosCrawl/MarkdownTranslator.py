@@ -14,7 +14,7 @@ class MarkdownTranslator(object):
     translator['li'] = lambda(el) : "" + el.text_content() + "\n"
     # ul and ol are dumb translators, since all the real work happens in 
     # translate()
-    translator['ul'] = lambda(el) : el.text_content() + "\n"
+    translator['ul'] = lambda(el) : "\n\n" + el.text_content() + "\n\n"
     translator['ol'] = translator['ul']
 
     # Links

@@ -123,8 +123,22 @@ def fetchViaUrllib(key):
             saveHtmlToDisk(tosDoc, key)
         return tosDom.xpath(xpaths[key])
     except IOError as e:
-        # Actually long a network error
+        # TODO: Actually log a network error
         print "Something went wrong with the tubes"
+
+def listify(text):
+    """
+        Input: A string of text
+        Output: A list of paragraphs, which are themselves lists of sentences.
+                Newlines are maintained in the output
+    """
+    import nltk.data
+    sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+    paras = text.splitlines(True)
+    for i in xrange(len(paras)):
+        paras[i] = sent_tokenizer.tokenize(paras[i])
+
+    return paras
 
 def checkDocuments():
     for doc,url in urls.items():
