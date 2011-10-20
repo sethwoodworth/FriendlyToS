@@ -10,7 +10,6 @@ This is the technical implementation of FriendlyToS and contains four subproject
 
 TODOs
 =====
- * research javascript web parsers/scrapers for ease of use
  * create Goal words list from Anton, Veil, &etc for parsing
    * pg. 14 of Anton & Earp
    * (i.e. TRACK, AGGREGATE, PROVIDE)
@@ -116,3 +115,13 @@ Discussing history of law, some background on privacy policies, policy analysis 
  * Communications Decency Act
  * DMCA
  * Video Privacy Protection Act
+
+**Academic References**
+
+* [Barth - Design and analysis of privacy policies (Dissertation)](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.167.8017&rep=rep1&type=pdf)
+* Anton - A Requirements taxonomy for reducing web site privacy vulnerabilities
+* [Anton - A taxonomy for web site privacy requirements](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.67.8001&rep=rep1&type=pdf)
+* [FTC - Privacy Online: Fair information practices in the marketplace](http://www.ftc.gov/reports/privacy2000/privacy2000.pdf)
+* [Schwaig - Compliance to the fair information practices: How are the Fortune 500 handling online privacy disclosures?](http://www.profkane.com/uploads/7/9/1/3/79137/schwaig_compliance-to-the-fair-information-practices-how-are-the-fortune-500-handling-online-privacy-disclosures_2006.pdf)
+* [Vail - An empirical study of consumer perceptions and comprehension of web site privacy policies](http://www.truststc.org/wise/articles2009/article1.pdf)
+* Williams - Internet Privacy Policies: A composite index for measuring compliance to the fair information principles
