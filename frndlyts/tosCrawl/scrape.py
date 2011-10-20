@@ -3,6 +3,8 @@
 # Requires lxml - install via http://lxml.de/installation.html#installation or
 # your distro's package manager
 #
+# Requires nltk and and punkt via nltk.download()
+#
 # .xpath(query) will return a list of lxml.html.HtmlElement
 #
 # TODO: Proper error handling
@@ -71,7 +73,7 @@ def saveMdToDisk(md, filename):
         return
 
     f = open(filename, 'w')
-    f.write(md)
+    f.write(md.encode('utf8'))
     f.close()
 
 def saveHtmlToDisk(doc, filename):
@@ -90,17 +92,27 @@ def saveHtmlToDisk(doc, filename):
     f.write(doc)
     f.close()
 
-def fetchViaUrllib(key):
+def saveTestCase(tosDoc, md, filename):
+    import time
+
+    fileTime = time.strftime('%Y%m%d_%H%M')
+    folder = './samples/'
+    filename = folder + filename.replace(' ', '_') + '_' + fileTime
+
+    f = open(filename + '.html', 'w')
+    f.write(tosDoc)
+    f.close()
+
+    f = open(filename + '.md', 'w')
+    f.write(md.encode('utf8'))
+    f.close()
+
+def fetch(key):
     """
-        Fetches a webpage, saves the page to a file if the fetched page is a
-            new version, then searches the webpage for the corresponding
-            document element.
+        Fetches a webpage and returns the page as a string
 
         Input: A key for the urls/xpaths directories 
-        Output: A HtmlElement representing the element containing the text 
-            of interest
-        TODO: Probably brake this up eventually. May need to change the order of
-            new dom creation, version testing, file writing, etc...
+        Output: A string containing the fetched page
     """
     import urllib
 
@@ -113,15 +125,12 @@ def fetchViaUrllib(key):
     # urllib doesn't play well with https, so make sure we don't connect via
     # https
 
-    # Retreive and try to build a tree
+    # Retreive and return the webpage
     try:
         socket = urllib.urlopen(urls[key])
         tosDoc = socket.read()
         socket.close()
-        tosDom = html.fromstring(tosDoc)
-        if isNewVersion(tosDom):
-            saveHtmlToDisk(tosDoc, key)
-        return tosDom.xpath(xpaths[key])
+        return tosDoc
     except IOError as e:
         # TODO: Actually log a network error
         print "Something went wrong with the tubes"
@@ -151,7 +160,10 @@ def checkDocuments():
 
 # Just for testing things out and cause I'm sick of retying this all the time.
 def foo():
-    return fetchViaUrllib('Facebook ToS')
+    global tosDoc
+    tosDoc = fetch('Facebook ToS')
+    tosDom = html.fromstring(tosDoc)
+    return tosDom.xpath(xpaths['Facebook ToS'])
 
 def dumbFoo():
     from lxml.html import fromstring

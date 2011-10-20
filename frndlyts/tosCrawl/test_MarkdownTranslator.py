@@ -1,3 +1,13 @@
+# Process for adding cases to the test_files test:
+#   1.) Be in a python shell
+#   2.) from scrape import *
+#   3.) from lxml import etree
+#   4.) tosDoc = fetch('<document name>')
+#   5.) results = html.fromstring(tosDoc).xpath(xpaths['<document name>'])
+#   6.) elHtml = etree.tostring(results[0])
+#   7.) md = t.translate(results[0])
+#   8.) saveTestCase(elHtml, md, '<document name>')
+
 from MarkdownTranslator import *
 from lxml.html import fromstring
 import unittest
@@ -5,7 +15,8 @@ import unittest
 # Tests
 class TestMarkdownTranslator(unittest.TestCase):
     def setUp(self):
-        self.t = MarkdownTranslator(False)
+        self.t = MarkdownTranslator(True,False)
+        self.samples_dir = './samples/'
     def tearDown(self):
         pass
     def test_a_translator(self):
@@ -152,6 +163,29 @@ class TestMarkdownTranslator(unittest.TestCase):
                     'Recieved:\n' + response + "\n---"
         self.assertEqual(response, correct_response, err_msg)
         print "OK"
+
+    def test_files(self):
+        import os, re
+        cases = os.listdir(self.samples_dir)
+        for case in cases:
+            parts = re.search('(.+)\.(.+)', case)
+            if parts.group(2) == 'md': continue
+            case_name = parts.group(1)
+            
+            case_name_html = self.samples_dir + case_name + '.html'
+            f_html = open(case_name_html, 'r')
+            case_html = f_html.read()
+            f_html.close()
+            
+            case_name_md = self.samples_dir + case_name + '.md'
+            f_md = open(case_name_md, 'r')
+            case_md = f_md.read()
+            f_md.close()
+
+            err_msg = 'Translation of ' + case_name_html + ' does not match ' + case_name_md
+            self.assertEqual(case_md, self.t.translate(fromstring(case_html)), err_msg)
+        print "OK"
+
 # Run Tests
 if __name__ == '__main__':
     unittest.main()
