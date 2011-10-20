@@ -164,4 +164,4 @@ def ulFoo():
 results = foo()
 dumbDom = dumbFoo()
 ulDom = ulFoo()
-t = MarkdownTranslator(True)
+t = MarkdownTranslator(True,True)

@@ -56,14 +56,38 @@ class MarkdownTranslator(object):
 
     # End element translator functions
 
-    def __init__(self, verbose=False):
+    def __init__(self, tl=True, verbose=False):
         """
+            If tl == True, the translate funciton will translate list markup 
+            into Markdown.
             If verbose == True, debugging messages will be printed out during a 
             translation
         """
+        if not isinstance(tl, bool):
+            raise ValueError("Expecting bool")
+        if not isinstance(verbose, bool):
+            raise ValueError("Expecting bool")
+
         self.prepend = ""       # Used in ul and ol
         self.v_prepend = ""     # Used during verbose printing
         self.verbose = verbose
+        self.tl = tl
+
+    def setTranslateLists(self, tl):
+        """
+           Use to set an instance of MarkdownTranslator to translate uls and
+           ols. If given False, the translate function will not translate lists
+           and will retain the HTML of ul, ol, and li, but will continue to 
+           translate child elements.
+
+           INPUT: True or False
+           DEFAULT: True
+        """
+        if not isinstance(tl, bool):
+            raise ValueError("Expecting bool")
+
+        self.tl = tl
+        return
 
     def translate(self, el):
         """
@@ -81,12 +105,12 @@ class MarkdownTranslator(object):
         i = 1
         for child in el.iterchildren():
 
-            if el.tag == 'ul' and child.tag == 'li':
+            if el.tag == 'ul' and child.tag == 'li' and self.tl:
                 self.prepend += "  "
                 translated = self.translate(child)
                 self.prepend = self.prepend[:-2]
                 child.text = self.prepend + " * " + translated
-            elif el.tag == 'ol' and child.tag == 'li':
+            elif el.tag == 'ol' and child.tag == 'li' and self.tl:
                 self.prepend += "  "
                 translated = self.translate(child)
                 self.prepend = self.prepend[:-2]
@@ -102,8 +126,17 @@ class MarkdownTranslator(object):
         
         # By now the text of all children have been absorbed into the text of
         # this element. Now all that is left is to translate the element
-        # itself. 
-        el.text = MarkdownTranslator.translator[el.tag](el)
+        # itself. If we are not translating lists, then we need to add list
+        # markup to the translation.
+        translated = MarkdownTranslator.translator[el.tag](el)
+        if el.tag == 'li' and self.tl == False:
+            el.text = '<li>' + translated + '</li>'
+        elif el.tag == 'ol' and self.tl == False:
+            el.text = '<ol>' + translated + '</ol>'
+        elif el.tag == 'ul' and self.tl == False:
+            el.text = '<ul>' + translated + '</ul>'
+        else:
+            el.text = translated
 
         # Lets play with encoding!
         # TODO: Consider if there is a better place/way to handle this
