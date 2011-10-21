@@ -12,50 +12,8 @@
 #       Put scraped data into the db
 
 # Eventually pull these from the DB
-urls = {
-    'AOL PP' : 'http://privacy.aol.com/privacy-policy/',
-    'AOL ToS' : 'http://legal.aol.com/terms-of-service/full-terms/',
-    'Digg PP' : 'http://about.digg.com/privacy',
-    'Digg ToS' : 'http://about.digg.com/terms-use',
-    'Facebook ToS' : 'http://www.facebook.com/terms.php',
-    'Facebook PP' : 'http://www.facebook.com/full_data_use_policy',
-    'Google PP' : 'http://www.google.com/intl/en/privacy/privacy-policy.html',
-    'Google ToS' : 'http://www.google.com/accounts/TOS?hl=en',
-    'Google Desktop' : 'http://desktop.google.com/privacypolicy.html',
-    'Google Groups PP' : 'http://groups-beta.google.com/googlegroups/privacy.html',
-    'reddit PP' : 'http://www.reddit.com/help/privacypolicy',
-    'reddit ToS' : 'http://www.reddit.com/help/useragreement',
-    'Safari Books Online PP' : 'http://safaribooksonline.com/Corporate/Index/privacyPolicy.php',
-    'Safari Books Online ToS' : 'http://safaribooksonline.com/Corporate/Index/termsUse.php',
-    'Twitter PP' : 'https://twitter.com/privacy',
-    'Twitter ToS' : 'https://twitter.com/tos',
-    'Yahoo' : 'http://info.yahoo.com/legal/us/yahoo/utos/utos-173.html',
-    'DuckDuckGo' : 'https://duckduckgo.com/privacy.html',
-    'lulz' : 'http://www.thisaddressdoesnexistnewbplanker.com'
-    }
-xpaths = {
-    'AOL PP' : '//*[@id="article"]',
-    'AOL ToS' : '//*[@id="article"]',
-    'Digg PP' : '/html/body/div[2]/div/div/div',
-    'Digg ToS' : '/html/body/div[2]/div/div/div',
-    'Google PP' : '//*[@id="aux"]',
-    'Google ToS' : '/html/body/table[2]/tbody/tr/td[4]/div',
-    'Google Desktop' : '//*[@id="content"]',
-    'Google Groups PP' : '/html/body/div/div[2]/div[2]',
-    'Facebook ToS' : '/html/body/div[3]/div/div/div[2]/div/div',
-    'Facebook PP' : '//*[@id="contentArea"]',
-    'reddit PP' : '/html/body/div[3]/div/div[1]',
-    'reddit ToS' : '/html/body/div[3]/div/div[1]',
-    'Safari Books Online PP' : '//*[@id="mainContent"]',
-    'Safari Books Online ToS' : '//*[@id="mainContent"]',
-    'Twitter PP' : '/html/body/div[2]/div/div',
-    'Twitter ToS' : '/html/body/div[2]/div/div',
-    'DuckDuckGo' : '/html/body/div#c/div#t', # maybe wrong or incomplete
-    'Yahoo' : '/html/body/div/div[4]/div/div/div'
-    }
-    # Thanks Firebug
 
-
+from sites_dict import sites
 from lxml import html
 from MarkdownTranslator import MarkdownTranslator
 
@@ -127,7 +85,7 @@ def fetch(key):
 
     # Retreive and return the webpage
     try:
-        socket = urllib.urlopen(urls[key])
+        socket = urllib.urlopen(sites[key]['url'])
         tosDoc = socket.read()
         socket.close()
         return tosDoc
@@ -150,10 +108,11 @@ def listify(text):
     return paras
 
 def checkDocuments():
-    for doc,url in urls.items():
+    for doc in sites.keys():
+        url = sites[doc]['url']
         if doc == 'lulz': continue
         print "Trying " + doc + ".....\t",
-        results = fetchViaUrllib(url, xpaths[doc])
+        results = fetchViaUrllib(url, sites[doc]['xpath'])
         if len(results) == 1: print "Success"
         elif len(results) == 0: print "FAIL"
         else: print "Multiple Results"
@@ -163,7 +122,7 @@ def foo():
     global tosDoc
     tosDoc = fetch('Facebook ToS')
     tosDom = html.fromstring(tosDoc)
-    return tosDom.xpath(xpaths['Facebook ToS'])
+    return tosDom.xpath(sites['Facebook ToS']['xpath'])
 
 def dumbFoo():
     from lxml.html import fromstring
