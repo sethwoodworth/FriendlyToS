@@ -84,18 +84,23 @@ class MarkdownTranslator(object):
            DEFAULT: True
         """
         if not isinstance(tl, bool):
-            raise ValueError("Expecting bool")
+            raise ValueError("Expecting bool, received " + `type(tl)`)
 
         self.tl = tl
         return
 
     def translate(self, el):
         """
-            Function called by others to translate an lxml.html.HTMLElement 
+            Function called by others to translate an lxml.html.HtmlElement 
             into a string of Markdown
             CAUTION: This will modify, mangle, and pretty much destroy el. 
             TODO: Make this not modify, mangle, and pretty much destroy el.
         """
+
+        if not isinstance(el, HtmlElement):
+            raise ValueError("Expecting lxml.HtmlElement, received " \
+                            + `type(el)`)
+
         if self.verbose == True:
             self.v_prepend += "  "
             print self.v_prepend + "Tag: " + el.tag
