@@ -69,9 +69,14 @@ def fetch(key):
     """
         Fetches a webpage and returns the page as a string
 
-        Input: A key for the urls/xpaths directories 
+        Input: A string that is a key in the sites directory 
         Output: A string containing the fetched page
     """
+    if not isinstance(key, str):
+        raise ValueError("Expecting str")
+    if not key in sites:
+        raise ValueError(key + " was not found in the sites directory")
+        
     import urllib
 
     # Need to set the agentString, as some sites get snotty with uncommon agents
@@ -96,9 +101,15 @@ def fetch(key):
 def listify(text):
     """
         Input: A string of text
-        Output: A list of paragraphs, which are themselves lists of sentences.
+        Output: A list of lists of strings. Each element of the root list
+                represents a paragraph. Each element of the sub lists 
+                represents a sentence.
                 Newlines are maintained in the output
     """
+
+    if not isinstance(text, str):
+        raise ValueError("Expecting str")
+    
     import nltk.data
     sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     paras = text.splitlines(True)
@@ -107,6 +118,7 @@ def listify(text):
 
     return paras
 
+# Bad/hacky method for checking if our xpaths are working.
 def checkDocuments():
     for doc in sites.keys():
         url = sites[doc]['url']
@@ -117,13 +129,6 @@ def checkDocuments():
         elif len(results) == 0: print "FAIL"
         else: print "Multiple Results"
 
-# Just for testing things out and cause I'm sick of retying this all the time.
-def foo():
-    global tosDoc
-    tosDoc = fetch('Facebook ToS')
-    tosDom = html.fromstring(tosDoc)
-    return tosDom.xpath(sites['Facebook ToS']['xpath'])
-
 def dumbFoo():
     from lxml.html import fromstring
     return fromstring('<div>Hello there <a href="http://www.google.com">Google</a></div>')
@@ -132,7 +137,18 @@ def ulFoo():
     from lxml.html import fromstring
     return fromstring('<ul><li>Hi, this is a list</li>\n<li>with <a href="http://www.wbushey.com">AWESOME LINKS!!!</a></li><li>and <span>text spanning many elements</span></li></ul>')
 
-results = foo()
+# Here for testing, and to be an example as to how to fetch and process a page with legalese
+def facebookExample(t):
+    global tosDoc
+    tosDoc = fetch('Facebook ToS')      # Retrieve the string of HTMl that makes up the page
+    tosDom = html.fromstring(tosDoc)    # Convert string of HTML into an lxml.html.HtmlElement
+    xpathResults = tosDom.xpath(sites['Facebook ToS']['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
+    # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
+    md = t.translate(xpathResults[0])   # Use the MarkdownTranslator to convert the text of the found element into Markdown.
+    return md
+
+
 dumbDom = dumbFoo()
 ulDom = ulFoo()
 t = MarkdownTranslator(True,True)
+facebookMd = facebookExample(t)
