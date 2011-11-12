@@ -6,7 +6,10 @@ class Organization(models.Model):
     """
     name        = models.CharField(max_length=50)
     url         = models.URLField()                 # Org's main operating URL
-    created_at  = models.DateTimeField()            # time and date org was added to this list
+    created_at  = models.DateTimeField(auto_now_add=True)            # time and date org was added to this list
+
+    def __unicode__(self):
+        return self.name
 
 class PolicyDocument(models.Model):
     """
@@ -16,6 +19,9 @@ class PolicyDocument(models.Model):
     documentPath    = models.CharField(max_length=255)      # this might just be a textfield
     title           = models.CharField(max_length=100)      # What the org calls this document (privacy policy, terms of service, other)
     url         = models.URLField()                         # current full URL to the policy
+
+    def __unicode__(self):
+        return "%s's %s from %s" % (self.orgid, self.title, self.url)
 
 class PolicyVersion(models.Model):
     """
