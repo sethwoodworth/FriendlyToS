@@ -1,4 +1,3 @@
-
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #
 # This file is to replicate the response of a database response.
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #
@@ -27,6 +26,14 @@ sites = {
         'xpath': '//*[@id="aux"]'},
     'Google ToS': {'url': 'http://www.google.com/accounts/TOS?hl=en',
         'xpath': '/html/body/table[2]/tbody/tr/td[4]/div'},
+    'MITx ToS': {'url': 'https://6002x.mitx.mit.edu/t/tos.html', 
+        'xpath': '/html/body/section.tos/div'},
+    'MITx PP': {'url': 'https://6002x.mitx.mit.edu/t/privacy.html',
+        'xpath': '/html/body/section.privacy-policy/div'},
+    'MITx Copyright': {'url': 'https://6002x.mitx.mit.edu/t/copyright.html',
+        'xpath': '/html/body/section.copyright/div'},
+    'MITx Honor Code': {'url': 'https://6002x.mitx.mit.edu/t/honor.html',
+        'xpath': '/html/body/section.honor-code/div'},
     'Safari Books Online PP': {'url': 'http://safaribooksonline.com/Corporate/Index/privacyPolicy.php',
         'xpath': '//*[@id="mainContent"]'},
     'Safari Books Online ToS': {'url': 'http://safaribooksonline.com/Corporate/Index/termsUse.php',
