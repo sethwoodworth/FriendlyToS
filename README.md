@@ -116,6 +116,10 @@ Discussing history of law, some background on privacy policies, policy analysis 
  * DMCA
  * Video Privacy Protection Act
 
+**Interesting or Related Projects**
+* [Collusion](http://collusion.toolness.org/) - Firefox plugin that lets you see connections between trackers you have encountered.
+* [Privacy Score](http://privacyscore.com/) - As of 3/5/2012, scores 1600+ websites based on how risky a privacy policy is to a user.
+
 **Academic References**
 
 * [Barth - Design and analysis of privacy policies (Dissertation)](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.167.8017&rep=rep1&type=pdf)
