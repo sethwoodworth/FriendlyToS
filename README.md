@@ -120,6 +120,7 @@ Discussing history of law, some background on privacy policies, policy analysis 
 
 * [Collusion](http://collusion.toolness.org/) - Firefox plugin that lets you see connections between trackers you have encountered.
 * [Privacy Score](http://privacyscore.com/) - As of 3/5/2012, scores 1600+ websites based on how risky a privacy policy is to a user.
+* [OpenCalais](http://www.opencalais.com/about) - Semantic analysis and linking service provided for free by Thomson Reuters.
 
 **Academic References**
 
