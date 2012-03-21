@@ -4,12 +4,13 @@
 #   3.) from lxml import etree
 #   4.) tosDoc = fetch('<document name>')
 #   5.) results = html.fromstring(tosDoc).xpath(xpaths['<document name>'])
-#   6.) elHtml = etree.tostring(results[0])
+#   6.) elHtml = etree.tostring(results[0], encoding=unicode, method='html')
 #   7.) md = t.translate(results[0])
 #   8.) saveTestCase(elHtml, md, '<document name>')
 
 from MarkdownTranslator import *
 from lxml.html import fromstring
+import markdown2
 import unittest
 
 # Tests
@@ -156,7 +157,7 @@ class TestMarkdownTranslator(unittest.TestCase):
     def test_ul_translator(self):
         print "Testing 'ul' translator",
         el = fromstring('<ul><li>This is</li>\n<li>a list</li><li>of elements</li></ul>')
-        correct_response = ' * This is\n * a list\n * of elements\n\n'
+        correct_response = '\n\n * This is\n\n * a list\n * of elements\n\n\n'
         response = self.t.translate(el)
         err_msg = 'Unordered lists are not translating correctly\n'\
                     'Expected:\n' + correct_response + '\n---\n'\
@@ -165,7 +166,9 @@ class TestMarkdownTranslator(unittest.TestCase):
         print "OK"
 
     def test_files(self):
-        import os, re
+        print "Testing files from " + self.samples_dir + "..."
+        import os, re, codecs
+        from lxml.html.diff import htmldiff
         cases = os.listdir(self.samples_dir)
         for case in cases:
             parts = re.search('(.+)\.(.+)', case)
@@ -173,17 +176,24 @@ class TestMarkdownTranslator(unittest.TestCase):
             case_name = parts.group(1)
             
             case_name_html = self.samples_dir + case_name + '.html'
-            f_html = open(case_name_html, 'r')
+            f_html = codecs.open(case_name_html, 'r', 'utf-8')
             case_html = f_html.read()
             f_html.close()
             
             case_name_md = self.samples_dir + case_name + '.md'
-            f_md = open(case_name_md, 'r')
+            f_md = codecs.open(case_name_md, 'r', 'utf-8')
             case_md = f_md.read()
             f_md.close()
 
-            err_msg = 'Translation of ' + case_name_html + ' does not match ' + case_name_md
-            self.assertEqual(case_md, self.t.translate(fromstring(case_html)), err_msg)
+            case_challenge = self.t.translate(fromstring(case_html))
+            f_challenge = codecs.open(case_name_md + '.challenge', 'w', 'utf-8')
+            f_challenge.write(case_challenge)
+            f_challenge.close()
+
+            err_msg = 'Translation of ' + case_name_html + ' does not match ' + case_name_md + '\n' \
+                        + '\tTranslation of ' + case_name_html + ' will be saved as ' + case_name_md + '.challenge\n'
+            self.assertEqual(case_md.rstrip(), case_challenge.rstrip(), err_msg)
+            os.remove(case_name_md + '.challenge')
         print "OK"
 
 # Run Tests

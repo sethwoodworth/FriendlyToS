@@ -14,66 +14,152 @@
 # Eventually pull these from the DB
 
 from sites_dict import sites
-from lxml import html
+from lxml import html, etree
 from MarkdownTranslator import MarkdownTranslator
+import codecs
+
+# Set our Unicode enconding of choice
+UNICODE_ENCODING = 'utf-8'
+
+## Define function execution statuses
+## 2xx are successful, 3xx are completion with warnings, and 4xx are 
+## non-completion with errors
+## Question, are 4xx statuses needed, since we have exceptions?
+
+SUCCESS = 200
+MD_ALREADY_EXISTS = 310
+HTML_ALREADY_EXISTS = 311
 
 def isNewVersion(tosDom):
     return True
 
-# Very hacky convience function for development/testing.
-def saveMdToDisk(md, filename):
-    import os.path, time
+def getCurrentDatetime():
+    """
+        Returns the current datetime as a string, in the Ymd_HM format.
 
-    filename = filename.replace(' ', '_') + '_' + time.strftime('%Y%m%d_%H%M')\
-        + '.md'
+        Output: A string representing the current datetime
+    """
+    import time
+    return time.strftime('%Y%m%d_%H%M')
+
+def saveMdToDisk(md, filenameBase, datetime):
+    """
+        Saves the passed Markdown string to a file named in the following 
+        format: filenameBase_datetime.md
+
+        Files will be saved using the Unicode Encoding specified by 
+        UNICODE_ENCODING
+        
+        If a  file already exists with the filename base and datetime provided,
+        nothing will be written to disk, and the function will return an 
+        MD_ALREADY_EXISTS status.
+
+        Input: 
+            md: A unicode containing the Markdown representation of a document's
+                text
+            filenameBase: A string containing the base of the document's
+                filename
+            datetime: A string containing the datetime that will be used for 
+                the document's file
+        
+        Output: An integer representing a function execution status
+    """
+    # Type checking
+    if not isinstance(md, unicode):
+        raise ValueError("Expecting md to be unicode, received " \
+                        + `type(md)`)
+    if not isinstance(filenameBase, str):
+        raise ValueError("Expecting filenameBase to be str, received " \
+                        + `type(filenameBase)`)
+    if not isinstance(datetime, str):
+        raise ValueError("Expecting datetime to be str, received " \
+                        + `type(datetime)`)
+
+
+    import os.path
+
+    # Construct final filename
+    filename = filenameBase.replace(' ', '_') + '_' + datetime + '.md'
 
     if os.path.isfile(filename):
-        return
+        return MD_ALREADY_EXISTS
 
-    f = open(filename, 'w')
-    f.write(md.encode('utf8'))
+    f = codecs.open(filename, 'w', UNICODE_ENCODING)
+    f.write(md)
     f.close()
 
-def saveHtmlToDisk(doc, filename):
-    import os.path, time
+    return SUCCESS
 
-    # Filename is augmented with the current datetime.
-    filename = filename.replace(' ', '_') + '_' + time.strftime('%Y%m%d_%H%M')\
-        + '.html'
+def saveHtmlToDisk(html, filenameBase, datetime):
+    """
+        Saves the passed HTML string to a file named in the following 
+        format: filenameBase_datetime.md
+        
+        Files will be saved using the Unicode Encoding specified by 
+        UNICODE_ENCODING
+
+        If a  file already exists with the filename base and datetime provided,
+        nothing will be written to disk, and the function will return an 
+        HTML_ALREADY_EXISTS status.
+
+        Input: 
+            html: A string containing the HTML representation of a document's
+                text
+            filenameBase: A string containing the base of the document's
+                filename
+            datetime: A string containing the datetime that will be used for 
+                the document's file
+        
+        Output: An integer representing a function execution status
+    """
+    # Type checking
+    if not isinstance(html, unicode):
+        raise ValueError("Expecting html to be unicode, received " \
+                        + `type(html)`)
+    if not isinstance(filenameBase, str):
+        raise ValueError("Expecting filenameBase to be str, received " \
+                        + `type(filenameBase)`)
+    if not isinstance(datetime, str):
+        raise ValueError("Expecting datetime to be str, received " \
+                        + `type(datetime)`)
+
+
+    import os.path
+
+    # Construct final filename
+    filename = filenameBase.replace(' ', '_') + '_' + datetime + '.html'
 
     if os.path.isfile(filename):
-        return
+        return HTML_ALREADY_EXISTS
 
     # Probably some efficency issues with buffers or what not that 
     # I don't know about.
-    f = open(filename, 'w')
-    f.write(doc)
+    f = codecs.open(filename, 'w', UNICODE_ENCODING)
+    f.write(html)
     f.close()
+
+    return SUCCESS
 
 def saveTestCase(tosDoc, md, filename):
-    import time
 
-    fileTime = time.strftime('%Y%m%d_%H%M')
+    fileTime = getCurrentDatetime()
     folder = './samples/'
-    filename = folder + filename.replace(' ', '_') + '_' + fileTime
+    filename = folder + filename
 
-    f = open(filename + '.html', 'w')
-    f.write(tosDoc)
-    f.close()
+    saveMdToDisk(md, filename, fileTime)
+    saveHtmlToDisk(tosDoc, filename, fileTime)
 
-    f = open(filename + '.md', 'w')
-    f.write(md.encode('utf8'))
-    f.close()
+    return SUCCESS
 
 def fetch(key):
     """
-        Fetches a webpage and returns the page as a string
+        Fetches a webpage and returns the page as a utf-8 encoded unicode
 
         Input: A string that is a key in the sites directory 
-        Output: A string containing the fetched page
+        Output: A utf-8 unicode containing the fetched page
     """
     if not isinstance(key, str):
-        raise ValueError("Expecting str")
+        raise ValueError("Expecting str, received " + `type(key)`)
     if not key in sites:
         raise ValueError(key + " was not found in the sites directory")
         
@@ -93,7 +179,7 @@ def fetch(key):
         socket = urllib.urlopen(sites[key]['url'])
         tosDoc = socket.read()
         socket.close()
-        return tosDoc
+        return unicode(tosDoc, UNICODE_ENCODING)
     except IOError as e:
         # TODO: Actually log a network error
         print "Something went wrong with the tubes"
@@ -140,15 +226,17 @@ def ulFoo():
 # Here for testing, and to be an example as to how to fetch and process a page with legalese
 def facebookExample(t):
     global tosDoc
-    tosDoc = fetch('Facebook ToS')      # Retrieve the string of HTMl that makes up the page
-    tosDom = html.fromstring(tosDoc)    # Convert string of HTML into an lxml.html.HtmlElement
+    tosHtml = fetch('Facebook ToS')      # Retrieve the string of HTMl that makes up the page
+    tosDom = html.fromstring(tosHtml)    # Convert string of HTML into an lxml.html.HtmlElement
     xpathResults = tosDom.xpath(sites['Facebook ToS']['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
+    divHTML = etree.tostring(xpathResults[0], encoding=unicode, method='html')
     # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
     md = t.translate(xpathResults[0])   # Use the MarkdownTranslator to convert the text of the found element into Markdown.
+    saveTestCase(divHTML, md, 'Facebook ToS')
     return md
 
 
 dumbDom = dumbFoo()
 ulDom = ulFoo()
 t = MarkdownTranslator(True,True)
-facebookMd = facebookExample(t)
+#facebookMd = facebookExample(t)

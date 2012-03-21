@@ -11,10 +11,27 @@ class MarkdownTranslator(object):
     # Build the dictionary of element translators
 
     # Lists
-    translator['li'] = lambda(el) : "" + el.text_content() + "\n"
-    # ul and ol are dumb translators, since all the real work happens in 
-    # translate()
-    translator['ul'] = lambda(el) : "\n\n" + el.text_content() + "\n\n"
+    # In the normal case, these are dumb translators. In the case of nested
+    # lists, we need to prevent the inclusion of additional new lines. Thus,
+    # the last li of a nested list does not add a newline, and uls and ols
+    # add fewer newlines.
+    # Additional work takes place in translate()
+    def translate_li(el):
+        if el.getparent().getparent() is not None \
+                and el.getparent().getparent().tag == 'li' \
+                and el.getparent().iterchildren(tag='li', reversed=True).next() is el:
+            return el.text_content()
+        else:
+            return "" + el.text_content() + "\n"
+
+    translator['li'] = translate_li
+    def translate_ul(el):
+        if el.getparent().tag == 'li':
+            return "\n" + el.text_content()
+        else:
+            return "\n\n" + el.text_content() + "\n\n"
+
+    translator['ul'] = translate_ul
     translator['ol'] = translator['ul']
 
     # Links
@@ -33,11 +50,13 @@ class MarkdownTranslator(object):
     translator['span'] = lambda(el) : el.text_content()
 
     # <b> and <strong> are the same
-    translator['b'] = lambda(el) : "**" + el.text_content() + "**"
+    # MD breaks when there is spacing between the markup and the content
+    translator['b'] = lambda(el) : "**" + el.text_content().strip() + "**"
     translator['strong'] = translator['b']
 
     # <i> and <em> are the same
-    translator['i'] = lambda(el) : "*" + el.text_content() + "*"
+    # MD breaks when there is spacing between the markup and the content
+    translator['i'] = lambda(el) : "*" + el.text_content().strip() + "*"
     translator['em'] = translator['i']
 
     # Images
@@ -133,6 +152,12 @@ class MarkdownTranslator(object):
         # this element. Now all that is left is to translate the element
         # itself. If we are not translating lists, then we need to add list
         # markup to the translation.
+        #
+        # It seems that nested lists require some cleanup. There needs to b
+        # 3 \n between the end of a nested list's content and the beginning of
+        # and element of the outer list. Thus, some regexing may be needed.
+        #
+        # 
         translated = MarkdownTranslator.translator[el.tag](el)
         if el.tag == 'li' and self.tl == False:
             el.text = '<li>' + translated + '</li>'

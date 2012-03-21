@@ -17,7 +17,7 @@ sites = {
     'Facebook PP': {'url': 'http://www.facebook.com/full_data_use_policy',
         'xpath': '//*[@id="contentArea"]'},
     'Facebook ToS': {'url': 'http://www.facebook.com/terms.php',
-        'xpath': '/html/body/div[3]/div/div/div[2]/div/div'},
+        'xpath': '/html/body/div[3]/div/div/div/div[2]/div/div'},
     'Google Desktop': {'url': 'http://desktop.google.com/privacypolicy.html',
         'xpath': '//*[@id="content"]'},
     'Google Groups PP': {'url': 'http://groups-beta.google.com/googlegroups/privacy.html',
