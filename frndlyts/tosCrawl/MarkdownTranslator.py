@@ -9,6 +9,8 @@ import re
 class MarkdownTranslator(object):
     translator = dict()             # Element translator functions
 
+    # Define which elements are block level, cause they're special
+    block_level = {'div','h1','h2','h3','h4','h5','h6','li','ol','p','pre','ul'}
 
     # Build the dictionary of element translators
 
@@ -77,6 +79,10 @@ class MarkdownTranslator(object):
     # MD breaks when there is spacing between the markup and the content
     translator['i'] = lambda(el) : "*" + el.text_content().strip() + "*"
     translator['em'] = translator['i']
+
+    # <u>
+    # MD doesn't do underlines, so just return the text
+    translator['u'] = lambda(el) : el.text_content()
 
     # Images
     translator['img'] = lambda(el) : "![" + el.attrib['alt'] + "](" + el.attrib['src'] + ")"
@@ -147,15 +153,18 @@ class MarkdownTranslator(object):
         # Translate depth first
         i = 1   # Used to numerate ols
         for child in el.iterchildren():
-            leftSib = child.getprevious()
+            # Skip comments
+            if isinstance(child, lxml.html.HtmlComment): continue
 
-            # Whitespace before header tags mess up indentation.
-            # If the header has a left sibling, the whitespace will be in tail
+
+            # Whitespace before block level elements mess up indentation.
+            # If the element has a left sibling, the whitespace will be in tail
             # Otherwise, the whitespace will be in the parent's text
-            if len(child.tag) == 2 and child.tag[0] == 'h':
-                if leftSib is not None:
-                    leftSib.tail = leftSib.tail.rstrip(' \t')
-                else:
+            left_sib = child.getprevious()
+            if (child.tag in MarkdownTranslator.block_level):
+                if left_sib is not None:
+                    left_sib.tail = left_sib.tail.rstrip(' \t')
+                elif el.text is not None:
                     el.text = el.text.rstrip(' \t')
 
             # Whitespace between lis mess up indentation.
@@ -204,6 +213,8 @@ class MarkdownTranslator(object):
         # Lets play with encoding!
         # TODO: Consider if there is a better place/way to handle this
         el.text = el.text.replace(u'\xc2\xa0', '&nbsp;')
+
+        print "text type is " + `type(el.text)`
 
         return el.text
 
