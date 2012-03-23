@@ -224,19 +224,20 @@ def ulFoo():
     return fromstring('<ul><li>Hi, this is a list</li>\n<li>with <a href="http://www.wbushey.com">AWESOME LINKS!!!</a></li><li>and <span>text spanning many elements</span></li></ul>')
 
 # Here for testing, and to be an example as to how to fetch and process a page with legalese
-def facebookExample(t):
+# k is a key in the sites directory (see sites_dict.py)
+# t is an instance of a MarkdownTranslator
+def fetchAndProcess(k, t):
     global tosDoc
-    tosHtml = fetch('Facebook ToS')      # Retrieve the string of HTMl that makes up the page
+    tosHtml = fetch(k)      # Retrieve the string of HTMl that makes up the page
     tosDom = html.fromstring(tosHtml)    # Convert string of HTML into an lxml.html.HtmlElement
-    xpathResults = tosDom.xpath(sites['Facebook ToS']['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
+    xpathResults = tosDom.xpath(sites[k]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
     divHTML = etree.tostring(xpathResults[0], encoding=unicode, method='html')
     # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
     md = t.translate(xpathResults[0])   # Use the MarkdownTranslator to convert the text of the found element into Markdown.
-    saveTestCase(divHTML, md, 'Facebook ToS')
+    saveTestCase(divHTML, md, k)
     return md
 
 
 dumbDom = dumbFoo()
 ulDom = ulFoo()
 t = MarkdownTranslator(True,True)
-#facebookMd = facebookExample(t)

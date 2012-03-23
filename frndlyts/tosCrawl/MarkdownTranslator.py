@@ -1,8 +1,10 @@
 # HTML -> Markdown translation functions
-# All of these functions, except for the ul and ol functions, assume that 
-# the provided element does not have child elements.
+# All of these functions assume that the provided element does not have child 
+# elements.
 
 from lxml.html import HtmlElement
+import lxml.html
+import re
 
 class MarkdownTranslator(object):
     translator = dict()             # Element translator functions
@@ -13,8 +15,8 @@ class MarkdownTranslator(object):
     # Lists
     # In the normal case, these are dumb translators. In the case of nested
     # lists, we need to prevent the inclusion of additional new lines. Thus,
-    # the last li of a nested list does not add a newline, and uls and ols
-    # add fewer newlines.
+    # the last li of a nested list does not add a newline, and nested uls and 
+    # ols add fewer newlines.
     # Additional work takes place in translate()
     def translate_li(el):
         if el.getparent().getparent() is not None \
@@ -36,9 +38,26 @@ class MarkdownTranslator(object):
 
     # Links
     # Markdown links don't work with newlines.
-    translator['a'] = lambda(el) : "[" + el.text_content().replace('\n','') \
-                        +  "](" + el.attrib['href'] + ")"
+    def translate_a(el):
+        if 'href' in el.keys():
+            if re.match(r"^javascript\:.*$", el.attrib['href']):
+                # Links that call javascript break markdown. Also, they just
+                # won't work on ftos. Just print the text.
+                return el.text_content()
+            # A good old link. Need to remove any newlines that might be in it.
+            return "[" + el.text_content().replace('\n','') \
+                +  "](" + el.attrib['href'] + ")"
+        elif 'name' in el.keys():
+            # Must be an anchor. Leave it as is.
+            #TODO Pass a constant for encoding
+            #TODO Define an encoding constant someplace accessible to all
+            return lxml.html.tostring(el, encoding='utf-8', method='html')
+        else:
+            # What the hell is this? Just print out the text
+            return el.text_content()
 
+    translator['a'] = translate_a
+    
     # Line Breaks
     translator['br'] = lambda(el) : "\n\n"
 
@@ -126,8 +145,22 @@ class MarkdownTranslator(object):
             print self.v_prepend + "Number of Children: " + `len(el)`
 
         # Translate depth first
-        i = 1
+        i = 1   # Used to numerate ols
         for child in el.iterchildren():
+            leftSib = child.getprevious()
+
+            # Whitespace before header tags mess up indentation.
+            # If the header has a left sibling, the whitespace will be in tail
+            # Otherwise, the whitespace will be in the parent's text
+            if len(child.tag) == 2 and child.tag[0] == 'h':
+                if leftSib is not None:
+                    leftSib.tail = leftSib.tail.rstrip(' \t')
+                else:
+                    el.text = el.text.rstrip(' \t')
+
+            # Whitespace between lis mess up indentation.
+            if child.tag == 'li' and child.tail is not None:
+                child.tail = child.tail.strip()
 
             if el.tag == 'ul' and child.tag == 'li' and self.tl:
                 self.prepend += "  "
