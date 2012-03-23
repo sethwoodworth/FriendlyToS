@@ -80,6 +80,9 @@ There are some functions/methods in Lxml that might be of interest:
  * lxml.html.diff.html_annotate - Another diff function that behaves like svn blame
  * See http://lxml.de/lxmlhtml.html#html-diff for the above two
 
+Python Markdown Reading:
+[python-markdown2](https://github.com/trentm/python-markdown2)
+
 **Thoughts on Scraping**
 
 Default lxml seems to work on the few sites tried so far. However, it  might be a good idea to support multiple forms of scraping. Lxml includes three parsers (default, BeautifulSoup, HTML5). Regexs could be a fallback. BTE is a potential last result.
