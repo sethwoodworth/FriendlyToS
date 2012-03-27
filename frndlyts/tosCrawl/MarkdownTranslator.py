@@ -63,8 +63,18 @@ class MarkdownTranslator(object):
     # Line Breaks
     translator['br'] = lambda(el) : "\n\n"
 
+    # A p or div tag, that is the first non-whitespace content of an li, needs
+    # to appear on the same line as the * indicating a list item. So we need
+    # to remove the whitespace before a p or div in this case.
+    def translate_p(el):
+        if el.getparent().tag == 'li' and el.getprevious() is None \
+                and (el.getparent().text is None or \
+                el.getparent().text.strip() == ''):
+            el.getparent().text = ''
+        return el.text_content() + "\n\n"
+            
     # <p> and <div> are the samething for this translation
-    translator['p'] = lambda(el) : el.text_content() + "\n\n"
+    translator['p'] = translate_p 
     translator['div'] = translator['p']
 
     # Span elements
@@ -88,17 +98,31 @@ class MarkdownTranslator(object):
     translator['img'] = lambda(el) : "![" + el.attrib['alt'] + "](" + el.attrib['src'] + ")"
 
     # Headings
-    translator['h1'] = lambda(el) : "#" + el.text_content() + "#"
-    translator['h2'] = lambda(el) : "##" + el.text_content() + "##"
-    translator['h3'] = lambda(el) : "###" + el.text_content() + "###"
-    translator['h4'] = lambda(el) : "####" + el.text_content() + "####"
-    translator['h5'] = lambda(el) : "#####" + el.text_content() + "#####"
-    translator['h6'] = lambda(el) : "######" + el.text_content() + "######"
+    translator['h1'] = lambda(el) : "#" + el.text_content() + "\n\n"
+    translator['h2'] = lambda(el) : "##" + el.text_content() + "\n\n"
+    translator['h3'] = lambda(el) : "###" + el.text_content() + "\n\n"
+    translator['h4'] = lambda(el) : "####" + el.text_content() + "\n\n"
+    translator['h5'] = lambda(el) : "#####" + el.text_content() + "\n\n"
+    translator['h6'] = lambda(el) : "######" + el.text_content() + "\n\n"
 
     # Probably need to add more to the <pre> function
     translator['pre'] = lambda(el) : el.text_content().replace("\n", " ") + "\n\n"
 
+    # Unknown tag. OMG, what is it?!?!
+    translator['fud'] = lambda(el) : el.text_content()
+
     # End element translator functions
+
+    # Creates the appropriate indentation level.
+    # No indentation is added if not in a list.
+    # A level 1 li is indented by 2 spaces
+    # All other level lis are indented by 4 + the previous level's indent
+    # Note the difference indentation between an li and the content of that li
+    def indent_list(self, li):
+        if self.list_level == 0: return ''
+        list_level = self.list_level
+        if li == True: list_level -= 1
+        return ' ' * (2 + (4 * list_level))
 
     def __init__(self, tl=True, verbose=False):
         """
@@ -113,6 +137,7 @@ class MarkdownTranslator(object):
             raise ValueError("Expecting bool")
 
         self.prepend = ""       # Used in ul and ol
+        self.list_level = 0
         self.v_prepend = ""     # Used during verbose printing
         self.verbose = verbose
         self.tl = tl
@@ -149,6 +174,7 @@ class MarkdownTranslator(object):
             self.v_prepend += "  "
             print self.v_prepend + "Tag: " + el.tag
             print self.v_prepend + "Number of Children: " + `len(el)`
+            print self.v_prepend + "List level " + `self.list_level`
 
         # Translate depth first
         i = 1   # Used to numerate ols
@@ -172,18 +198,40 @@ class MarkdownTranslator(object):
                 child.tail = child.tail.strip()
 
             if el.tag == 'ul' and child.tag == 'li' and self.tl:
-                self.prepend += "  "
+                #self.prepend += "  "
+                #self.list_level += 1
                 translated = self.translate(child)
-                self.prepend = self.prepend[:-2]
-                child.text = self.prepend + " * " + translated
+                #self.prepend = self.prepend[:-2]
+                #child.text = self.prepend + " * " + translated
+                child.text = self.indent_list(True) + "* " + translated
+                #self.list_level -= 1
             elif el.tag == 'ol' and child.tag == 'li' and self.tl:
-                self.prepend += "  "
+                #self.prepend += "  "
+                #self.list_level += 1
                 translated = self.translate(child)
-                self.prepend = self.prepend[:-2]
-                child.text = self.prepend + " " + `i` + ". " + translated
+                #self.prepend = self.prepend[:-2]
+                #child.text = self.prepend + " " + `i` + ". " + translated
+                child.text = self.indent_list(True) + `i` + ". " + translated
+                #self.list_level -= 1
                 i += 1
             else:
-                child.text = self.translate(child)
+                #child.text = self.translate(child)
+            #child.text = self.prepend + self.translate(child)
+                if child.tag in {'ol','ul'}:
+                    self.list_level += 1
+                    child.text = self.translate(child)
+                    self.list_level -= 1
+                elif child.tag in (MarkdownTranslator.block_level - {'ol','ul'}):
+                    child.text = self.indent_list(False) + self.translate(child)
+                else:
+                    child.text = self.translate(child)
+                    # Don't let brs brake list indentation
+                    if child.tag == 'br':
+                        if self.verbose == True:
+                            print self.v_prepend + "Adding list indentation after br"
+                        if child.tail:
+                            child.tail = self.indent_list(False) + child.tail.strip()
+
             child.drop_tag()    # Causes text to be absorbed into the parent
 
         if self.verbose: 
@@ -200,7 +248,11 @@ class MarkdownTranslator(object):
         # and element of the outer list. Thus, some regexing may be needed.
         #
         # 
-        translated = MarkdownTranslator.translator[el.tag](el)
+        if el.tag not in MarkdownTranslator.translator:
+            translated = MarkdownTranslator.translator['fud'](el)
+        else:
+            translated = MarkdownTranslator.translator[el.tag](el)
+
         if el.tag == 'li' and self.tl == False:
             el.text = '<li>' + translated + '</li>'
         elif el.tag == 'ol' and self.tl == False:
@@ -213,8 +265,6 @@ class MarkdownTranslator(object):
         # Lets play with encoding!
         # TODO: Consider if there is a better place/way to handle this
         el.text = el.text.replace(u'\xc2\xa0', '&nbsp;')
-
-        print "text type is " + `type(el.text)`
 
         return el.text
 
