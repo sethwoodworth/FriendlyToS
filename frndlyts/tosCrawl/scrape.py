@@ -230,13 +230,14 @@ def fetchAndProcess(k, t):
     global tosDoc
     tosHtml = fetch(k)      # Retrieve the string of HTMl that makes up the page
     print "tosHtml type is " + `type(tosHtml)`
+    f = codecs.open('raw_html.html','w',UNICODE_ENCODING)
+    f.write(tosHtml)
+    f.close()
     tosDom = html.fromstring(tosHtml)    # Convert string of HTML into an lxml.html.HtmlElement
     xpathResults = tosDom.xpath(sites[k]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
     # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
     divHTML = etree.tostring(xpathResults[0], encoding=unicode, method='html')
     # Now escape some characters that mean something to Markdown.
-    divHTML = divHTML.replace('[','\[')
-    divHTML = divHTML.replace(']','\]')
     md = t.translate(html.fromstring(divHTML))
     if isinstance(md, str):
         md = unicode(md, UNICODE_ENCODING)

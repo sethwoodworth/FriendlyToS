@@ -3,3 +3,5 @@
 *.pyc
 local_settings.py
 frndlyts/tosCrawl/samples/*
+frndlyts/tosCrawl/clean_html.html
+frndlyts/tosCrawl/raw_html.html
