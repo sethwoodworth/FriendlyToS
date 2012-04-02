@@ -18,10 +18,6 @@ sites = {
         'xpath': '//*[@id="contentArea"]'},
     'Facebook ToS': {'url': 'http://www.facebook.com/terms.php',
         'xpath': '/html/body/div[3]/div/div/div/div[2]/div/div'},
-    'Google Desktop': {'url': 'https://www.google.com/intl/en/policies/privacy/',
-        'xpath': '/html/body/div[3]/div[2]'},
-    'Google Groups PP': {'url': 'http://groups-beta.google.com/policies/privacy/',
-        'xpath': '/html/body/div[3]/div[2]'},
     'Google PP': {'url': 'http://www.google.com/intl/en/policies/privacy/',
         'xpath': '/html/body/div[3]/div[2]'},
     'Google ToS': {'url': 'https://www.google.com/intl/en/policies/terms/',
@@ -50,9 +46,5 @@ sites = {
         'xpath': '//*[@id="content"]'},
     'NewEgg TaC': {'url': 'http://www.newegg.com/Info/AllTermsAndConditions.aspx',
         'xpath': '//*[@id="bcaInfoContainer"]'},
-    'NewEgg PP': {'url': 'http://www.newegg.com/Info/AllTermsAndConditions.aspx',
-        'xpath': '/html/body/div[3]/div[2]/table/tbody/tr/td/div/div/div[3]/dl[2]/dd/div'},
-    'NewEgg Return Policy': {'url': 'http://www.newegg.com/Info/AllTermsAndConditions.aspx',
-        'xpath': '/html/body/div[3]/div[2]/table/tbody/tr/td/div/div/div[3]/dl[3]'}
     }
 

@@ -92,12 +92,13 @@ class MarkdownTranslator(object):
 
     # ------Bold and Strong------
     # MD breaks when there is spacing between the markup and the content
-    translator['b'] = lambda self,el : "**" + el.text_content().strip() + "**"
+    # MD Bold doesn't work across line breaks, so wrap seperate paragraphs in their own bolds
+    translator['b'] = lambda self,el : "**" + re.sub(r'\n{2,}', '**\n\n' + self.indent_list(False) + '**', el.text_content().strip()) + "**"
     translator['strong'] = translator['b']
 
     # ------Italics and Emphasis------
     # MD breaks when there is spacing between the markup and the content
-    translator['i'] = lambda self,el : "*" + el.text_content().strip() + "*"
+    translator['i'] = lambda self,el : "*" + re.sub(r'\n{2,}', '*\n\n' + self.indent_list(False) + '*', el.text_content().strip()) + "*"
     translator['em'] = translator['i']
 
     # ------<u>------
@@ -110,7 +111,7 @@ class MarkdownTranslator(object):
     # ------Headings------
     def pre_heading(self,el):
         # Headers should not have newlines in them
-        el.text = el.text.replace('\n', ' ')
+        # el.text = el.text.replace('\n', ' ')
 
         # Special case of a heading being the first content of an li.
         parent = el.getparent()
@@ -305,8 +306,9 @@ class MarkdownTranslator(object):
         # seem to actually do anything.
         psr = lxml.html.HTMLParser(remove_blank_text=True)
         el = lxml.html.fromstring(html_str, parser=psr)
-        # Remove whitespace surrounding any block level elements
+
         for node in el.iter():
+            # Remove whitespace surrounding any block level elements
             if node.tag in MarkdownTranslator.block_level:
                 left_sib = node.getprevious()
                 parent = node.getparent()
@@ -321,6 +323,13 @@ class MarkdownTranslator(object):
                 # Remove whitespace to the right
                 if node.tail:
                     node.tail = node.tail.lstrip()
+
+            # Remove newlines inside of blocklevels, except for pre and blockquote
+            if node.tag in MarkdownTranslator.block_level - {'blockquote','pre'} and node.text:
+                node.text = ' '.join(node.text.split('\n'))
+            if parent and parent.tag in MarkdownTranslator.block_level - {'blockquote','pre'} and node.tail:
+                node.tail = ' '.join(node.tail.split('\n'))
+                
 
         # For debugging, its helpful to save the string we are about to translate
         if self.verbose:

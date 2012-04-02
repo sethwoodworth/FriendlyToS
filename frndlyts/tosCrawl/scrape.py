@@ -167,7 +167,7 @@ def fetch(key):
 
     # Need to set the agentString, as some sites get snotty with uncommon agents
     class CrawlrURLOpener(urllib.FancyURLopener):
-        version = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0a2) Gecko/20110613 Firefox/6.0a2"
+        version = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21"
 
     urllib._urlopen = CrawlrURLOpener()
 
