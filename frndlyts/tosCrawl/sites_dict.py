@@ -4,6 +4,10 @@
 # TODO: replace this with the database
 
 sites = {
+    '500px PP': {'url': 'http://500px.com/privacy',
+        'xpath': '//*[@id="terms"]'},
+    '500px ToS': {'url': 'http://500px.com/terms',
+        'xpath': '//*[@id="terms"]'},
     'AOL PP': {'url': 'http://privacy.aol.com/privacy-policy/',
         'xpath': '//*[@id="article"]'},
     'AOL ToS': {'url': 'http://legal.aol.com/terms-of-service/full-terms/',
