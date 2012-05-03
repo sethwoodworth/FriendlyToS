@@ -1,19 +1,15 @@
-# HTML -> Markdown translation functions
-# All of these functions assume that the provided element does not have child 
-# elements.
-
 from lxml.html import HtmlElement
 from lxml.html.clean import Cleaner
 import lxml.html
 import re
 import codecs
 
-class MarkdownTranslator(object):
+class Markdownipy(object):
     translator = dict()             # Element translator functions
 
     # Define which elements are block level, cause they're special
     # Maybe poor name - this set refers to HTML elements that will cause newlines in MD.
-    block_level = {'blockquote','br','dd','div','dl','h1','h2','h3','h4','h5','h6','li','ol','p','pre','td','ul'}
+    block_level = {'blockquote','br','dd','div','dl','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','td','ul'}
 
     # Build the dictionary of element translators
 
@@ -101,6 +97,12 @@ class MarkdownTranslator(object):
     translator['i'] = lambda self,el : "*" + re.sub(r'\n{2,}', '*\n\n' + self.indent_list(False) + '*', el.text_content().strip()) + "*"
     translator['em'] = translator['i']
 
+    # ------Code------
+    # MD has different styles for inline code and a block of code. 
+
+    # ------Horizontal Rules------
+    translator['hr'] = lambda self, el: "------------\n\n"
+
     # ------<u>------
     # MD doesn't do underlines, so just return the text
     #translator['u'] = lambda self,el : el.text_content()
@@ -110,9 +112,6 @@ class MarkdownTranslator(object):
 
     # ------Headings------
     def pre_heading(self,el):
-        # Headers should not have newlines in them
-        # el.text = el.text.replace('\n', ' ')
-
         # Special case of a heading being the first content of an li.
         parent = el.getparent()
         left_sib = el.getprevious()
@@ -130,11 +129,15 @@ class MarkdownTranslator(object):
 
     # ------Preformated------
     # Probably need to add more to the <pre> function
-    translator['pre'] = lambda self,el : "\n" + self.indent_list(False) + el.text_content().replace("\n", " ") + "\n\n"
+    def translate_pre(self,el):
+        rtn_str = ""
+        for line in el.text_content().strip().split("\n"):
+            rtn_str += "    " + line + "\n"
+        return rtn_str + "\n"
+    translator['pre'] = translate_pre
 
     # ------Blockquotes------
     def translate_blockquote(self,el):
-        parent = el.getparent()
         rtn_str = ""
         for line in el.text_content().strip().split("\n"):
             rtn_str += self.indent_list(False) + "> " + line.strip() + "\n"
@@ -227,13 +230,13 @@ class MarkdownTranslator(object):
         # this element. Now all that is left is to translate the element
         # itself. If we are not translating lists, then we need to add list
         # markup to the translation.
-        if el.tag not in MarkdownTranslator.translator:
-            translated = MarkdownTranslator.translator['fud'](self,el)
+        if el.tag not in Markdownipy.translator:
+            translated = Markdownipy.translator['fud'](self,el)
         else:
-            translated = MarkdownTranslator.translator[el.tag](self,el)
+            translated = Markdownipy.translator[el.tag](self,el)
 
         # Add indentation to parent text that follows a block level element
-        if el.tag in MarkdownTranslator.block_level:
+        if el.tag in Markdownipy.block_level:
             self.post_block(el)
 
         if el.tag == 'li' and self.tl == False:
@@ -267,7 +270,7 @@ class MarkdownTranslator(object):
 
     def setTranslateLists(self, tl):
         """
-           Use to set an instance of MarkdownTranslator to translate uls and
+           Use to set an instance of Markdownipy to translate uls and
            ols. If given False, the translate function will not translate lists
            and will retain the HTML of ul, ol, and li, but will continue to 
            translate child elements.
@@ -309,9 +312,9 @@ class MarkdownTranslator(object):
 
         for node in el.iter():
             # Remove whitespace surrounding any block level elements
-            if node.tag in MarkdownTranslator.block_level:
-                left_sib = node.getprevious()
+            if node.tag in Markdownipy.block_level:
                 parent = node.getparent()
+                left_sib = node.getprevious()
                 # Remove whitespace to the left
                 if left_sib:
                     # left_sib.tail == None indicates there is no whitespace,
@@ -324,11 +327,11 @@ class MarkdownTranslator(object):
                 if node.tail:
                     node.tail = node.tail.lstrip()
 
-            # Remove newlines inside of blocklevels, except for pre and blockquote
-            if node.tag in MarkdownTranslator.block_level - {'blockquote','pre'} and node.text:
-                node.text = ' '.join(node.text.split('\n'))
-            if parent and parent.tag in MarkdownTranslator.block_level - {'blockquote','pre'} and node.tail:
-                node.tail = ' '.join(node.tail.split('\n'))
+                # Remove newlines inside of blocklevels, except for pre and blockquote
+                if node.tag in Markdownipy.block_level - {'blockquote','pre'} and node.text:
+                    node.text = ' '.join(node.text.split('\n'))
+                if parent and parent.tag in Markdownipy.block_level - {'blockquote','pre'} and node.tail:
+                    node.tail = ' '.join(node.tail.split('\n'))
                 
 
         # For debugging, its helpful to save the string we are about to translate

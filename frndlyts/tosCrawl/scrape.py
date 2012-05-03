@@ -15,8 +15,9 @@
 
 from sites_dict import sites
 from lxml import html, etree
-from MarkdownTranslator import MarkdownTranslator
+from Markdownipy import Markdownipy
 import codecs
+import logging
 
 # Set our Unicode enconding of choice
 UNICODE_ENCODING = 'utf-8'
@@ -29,6 +30,14 @@ UNICODE_ENCODING = 'utf-8'
 SUCCESS = 200
 MD_ALREADY_EXISTS = 310
 HTML_ALREADY_EXISTS = 311
+
+class UrlNotFound(Exception): pass
+class XpathNotFound(Exception): pass
+
+logging.basicConfig(filename='scrape.log', 
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d-%y %H:%M:%S')
 
 def isNewVersion(tosDom):
     return True
@@ -174,15 +183,22 @@ def fetch(key):
     # urllib doesn't play well with https, so make sure we don't connect via
     # https
 
-    # Retreive and return the webpage
-    try:
-        socket = urllib.urlopen(sites[key]['url'])
-        tosDoc = socket.read()
-        socket.close()
-        return unicode(tosDoc, UNICODE_ENCODING)
-    except IOError as e:
-        # TODO: Actually log a network error
-        print "Something went wrong with the tubes"
+    # Retreive the webpage
+    socket = urllib.urlopen(sites[key]['url'])
+    print "HTTP Code: %(code)d" % {"code": socket.getcode()}
+    if socket.getcode() == 404:
+        raise UrlNotFound('404: The page  %(url)s could not be found.' % {'url':sites[key]['url']})
+    elif socket.getcode() == 403:
+        raise UrlNotFound('403: The page %(url)s is forbidden.' % {'url':sites[key]['url']})
+    charset = UNICODE_ENCODING
+    if socket.info().getparam('charset'): charset = socket.info().getparam('charset') 
+    tosDoc = socket.read()
+    socket.close()
+
+    # Turn it into unicode
+    tosDocUni = unicode(tosDoc, charset)
+
+    return tosDocUni
 
 def listify(text):
     """
@@ -215,36 +231,39 @@ def checkDocuments():
         elif len(results) == 0: print "FAIL"
         else: print "Multiple Results"
 
-def dumbFoo():
-    from lxml.html import fromstring
-    return fromstring('<div>Hello there <a href="http://www.google.com">Google</a></div>')
-
-def ulFoo():
-    from lxml.html import fromstring
-    return fromstring('<ul><li>Hi, this is a list</li>\n<li>with <a href="http://www.wbushey.com">AWESOME LINKS!!!</a></li><li>and <span>text spanning many elements</span></li></ul>')
-
 # Here for testing, and to be an example as to how to fetch and process a page with legalese
 # k is a key in the sites directory (see sites_dict.py)
-# t is an instance of a MarkdownTranslator
+# t is an instance of Markdownipy
 def fetchAndProcess(k, t):
-    global tosDoc
-    tosHtml = fetch(k)      # Retrieve the string of HTMl that makes up the page
-    print "tosHtml type is " + `type(tosHtml)`
-    f = codecs.open('raw_html.html','w',UNICODE_ENCODING)
-    f.write(tosHtml)
-    f.close()
-    tosDom = html.fromstring(tosHtml)    # Convert string of HTML into an lxml.html.HtmlElement
-    xpathResults = tosDom.xpath(sites[k]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
-    # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
-    divHTML = etree.tostring(xpathResults[0], encoding=unicode, method='html')
-    # Now escape some characters that mean something to Markdown.
-    md = t.translate(html.fromstring(divHTML))
-    if isinstance(md, str):
-        md = unicode(md, UNICODE_ENCODING)
-    saveTestCase(divHTML, md, k)
-    return md
+    try:
+        tosHtml = fetch(k)      # Retrieve the string of HTMl that makes up the page
 
+        with codecs.open('raw.html', 'w', UNICODE_ENCODING) as f:
+            f.write(tosHtml)
+        tosDom = html.fromstring(tosHtml)    # Convert string of HTML into an lxml.html.HtmlElement
+        xpathResults = tosDom.xpath(sites[k]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
+        if len(xpathResults) == 0:
+            raise XpathNotFound('The xpath query for ' + k + ' yielded zero results') 
+        # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
+        divHTML = etree.tostring(xpathResults[0], encoding=unicode, method='html')
+        # Now escape some characters that mean something to Markdown.
+        md = t.translate(html.fromstring(divHTML))
+        if isinstance(md, str):
+            md = unicode(md, UNICODE_ENCODING)
+        saveTestCase(divHTML, md, k)
+        return md
+    except (UrlNotFound, XpathNotFound) as e:
+        logging.warning(e)
+    except (IOError) as e:
+        logging.error(e)
+    return None
 
-dumbDom = dumbFoo()
-ulDom = ulFoo()
-t = MarkdownTranslator(True,True)
+def checkAll(t):
+    for k in sites:
+        print "Checking " + k
+        md = fetchAndProcess(k, t)
+        if md: print "Sucess"
+        else: print "Failed"
+    
+
+t = Markdownipy(True,True)
