@@ -3,6 +3,7 @@ FriendlyToS
 FriendlyToS is a project to explain Terms of Services in a friendly way to the users of the web.
 
 This is the technical implementation of FriendlyToS and contains four subprojects:
+ * HTML and MD of ToSes being monitored     ('./documents')
  * FriendlyToS' Django website              ('./frndlyts')
  * Terms of Service monitoring framework    ('./tosWatch')
  * Natural language ToS annotation system   ('./tosGrokr')
@@ -82,6 +83,10 @@ There are some functions/methods in Lxml that might be of interest:
 
 Python Markdown Reading:
 [python-markdown2](https://github.com/trentm/python-markdown2)
+
+**Python and Git**
+[GitPython](https://github.com/gitpython-developers/GitPython) - Python library for interacting with git repos
+
 
 **Thoughts on Scraping**
 

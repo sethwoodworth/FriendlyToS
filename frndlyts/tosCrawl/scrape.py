@@ -16,6 +16,7 @@
 from sites_dict import sites
 from lxml import html, etree
 from Markdownipy import Markdownipy
+from git import *
 import codecs
 import logging
 
@@ -38,6 +39,10 @@ logging.basicConfig(filename='scrape.log',
                     level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d-%y %H:%M:%S')
+
+repo = Repo("../../")
+hct = repo.head.commit.tree
+doc_tree = hct['documents']
 
 def isNewVersion(tosDom):
     return True
@@ -220,17 +225,6 @@ def listify(text):
 
     return paras
 
-# Bad/hacky method for checking if our xpaths are working.
-def checkDocuments():
-    for doc in sites.keys():
-        url = sites[doc]['url']
-        if doc == 'lulz': continue
-        print "Trying " + doc + ".....\t",
-        results = fetchViaUrllib(url, sites[doc]['xpath'])
-        if len(results) == 1: print "Success"
-        elif len(results) == 0: print "FAIL"
-        else: print "Multiple Results"
-
 # Here for testing, and to be an example as to how to fetch and process a page with legalese
 # k is a key in the sites directory (see sites_dict.py)
 # t is an instance of Markdownipy
@@ -238,19 +232,31 @@ def fetchAndProcess(k, t):
     try:
         tosHtml = fetch(k)      # Retrieve the string of HTMl that makes up the page
 
+        # For DEBUG, print out the recieved page
         with codecs.open('raw.html', 'w', UNICODE_ENCODING) as f:
             f.write(tosHtml)
+
         tosDom = html.fromstring(tosHtml)    # Convert string of HTML into an lxml.html.HtmlElement
         xpathResults = tosDom.xpath(sites[k]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
+        
         if len(xpathResults) == 0:
             raise XpathNotFound('The xpath query for ' + k + ' yielded zero results') 
         # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
+        # Though it hasn't been tested, the translator should support a list of results
         divHTML = etree.tostring(xpathResults[0], encoding=unicode, method='html')
-        # Now escape some characters that mean something to Markdown.
         md = t.translate(html.fromstring(divHTML))
+
         if isinstance(md, str):
             md = unicode(md, UNICODE_ENCODING)
-        saveTestCase(divHTML, md, k)
+
+        # Want this to work with git instead
+        # Steps:
+        #   1.) Check if this document is in the repo. If no, go to step 3
+        #   2.) Compare md of retrieved version with md of most recent version
+        #   3.) If different, overwrite git version of html and md with retrieved version
+        
+        
+        #saveTestCase(divHTML, md, k)
         return md
     except (UrlNotFound, XpathNotFound) as e:
         logging.warning(e)
