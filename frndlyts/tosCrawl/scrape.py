@@ -6,12 +6,8 @@
 # Requires nltk and and punkt via nltk.download()
 #
 # .xpath(query) will return a list of lxml.html.HtmlElement
-#
-# TODO: Proper error handling
-#       Check out parser.error_log
-#       Put scraped data into the db
 
-# Eventually pull these from the DB
+# Eventually pull the sites directory from the DB
 
 from sites_dict import sites
 from lxml import html, etree
@@ -42,7 +38,7 @@ logging.basicConfig(filename='scrape.log',
 
 repo = Repo("../../")
 hct = repo.head.commit.tree
-doc_tree = hct['documents']
+docs_tree = hct['documents']
 
 def isNewVersion(tosDom):
     return True
@@ -165,17 +161,22 @@ def saveTestCase(tosDoc, md, filename):
 
     return SUCCESS
 
-def fetch(key):
+def fetch(org, doc):
     """
         Fetches a webpage and returns the page as a utf-8 encoded unicode
 
-        Input: A string that is a key in the sites directory 
+        Input:  org is the organization/company to retrieve from, as a string
+                doc is the document to retrieve, as a string
         Output: A utf-8 unicode containing the fetched page
     """
-    if not isinstance(key, str):
-        raise ValueError("Expecting str, received " + `type(key)`)
-    if not key in sites:
-        raise ValueError(key + " was not found in the sites directory")
+    if not isinstance(org, str):
+        raise ValueError("Expecting str for org, received " + `type(org)`)
+    if not isinstance(doc, str):
+        raise ValueError("Expecting str for doc, received " + `type(doc)`)
+    if not org in sites:
+        raise ValueError(org + " was not found in the sites directory")
+    if not doc in sites[org]:
+        raise ValueError(doc + " was not found in sites['" + org + "']")
         
     import urllib
 
@@ -189,12 +190,12 @@ def fetch(key):
     # https
 
     # Retreive the webpage
-    socket = urllib.urlopen(sites[key]['url'])
+    socket = urllib.urlopen(sites[org][doc]['url'])
     print "HTTP Code: %(code)d" % {"code": socket.getcode()}
     if socket.getcode() == 404:
-        raise UrlNotFound('404: The page  %(url)s could not be found.' % {'url':sites[key]['url']})
+        raise UrlNotFound('404: The page  %(url)s could not be found.' % {'url':sites[org][doc]['url']})
     elif socket.getcode() == 403:
-        raise UrlNotFound('403: The page %(url)s is forbidden.' % {'url':sites[key]['url']})
+        raise UrlNotFound('403: The page %(url)s is forbidden.' % {'url':sites[org][doc]['url']})
     charset = UNICODE_ENCODING
     if socket.info().getparam('charset'): charset = socket.info().getparam('charset') 
     tosDoc = socket.read()
@@ -226,21 +227,22 @@ def listify(text):
     return paras
 
 # Here for testing, and to be an example as to how to fetch and process a page with legalese
-# k is a key in the sites directory (see sites_dict.py)
+# org is a key in the sites directory (see sites_dict.py)
+# doc is a key in the sites[org] directory
 # t is an instance of Markdownipy
-def fetchAndProcess(k, t):
+def fetchAndProcess(org, doc, t):
     try:
-        tosHtml = fetch(k)      # Retrieve the string of HTMl that makes up the page
+        tosHtml = fetch(org, doc)      # Retrieve the string of HTMl that makes up the page
 
         # For DEBUG, print out the recieved page
         with codecs.open('raw.html', 'w', UNICODE_ENCODING) as f:
             f.write(tosHtml)
 
         tosDom = html.fromstring(tosHtml)    # Convert string of HTML into an lxml.html.HtmlElement
-        xpathResults = tosDom.xpath(sites[k]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
+        xpathResults = tosDom.xpath(sites[org][doc]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
         
         if len(xpathResults) == 0:
-            raise XpathNotFound('The xpath query for ' + k + ' yielded zero results') 
+            raise XpathNotFound('The xpath query for ' + org + " : " + doc + ' yielded zero results') 
         # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
         # Though it hasn't been tested, the translator should support a list of results
         divHTML = etree.tostring(xpathResults[0], encoding=unicode, method='html')
@@ -265,11 +267,12 @@ def fetchAndProcess(k, t):
     return None
 
 def checkAll(t):
-    for k in sites:
-        print "Checking " + k
-        md = fetchAndProcess(k, t)
-        if md: print "Sucess"
-        else: print "Failed"
+    for org in sites:
+        for doc in sites[org]:
+            print "Checking " + org + " : " + doc
+            md = fetchAndProcess(org, doc, t)
+            if md: print "Sucess"
+            else: print "Failed"
     
 
 t = Markdownipy(True,True)
