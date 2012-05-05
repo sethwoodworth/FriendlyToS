@@ -15,6 +15,7 @@ from Markdownipy import Markdownipy
 from git import *
 import codecs
 import logging
+import os
 
 # Set our Unicode enconding of choice
 UNICODE_ENCODING = 'utf-8'
@@ -36,9 +37,16 @@ logging.basicConfig(filename='scrape.log',
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d-%y %H:%M:%S')
 
-repo = Repo("../../")
-hct = repo.head.commit.tree
-docs_tree = hct['documents']
+DOCUMENTS_DIR = "../../../Docs/documents/"
+MD_DIR = DOCUMENTS_DIR + "md/"
+HTML_DIR = DOCUMENTS_DIR + "html/"
+
+git_repo = Repo("../../../Docs")
+git_stage = git_repo.index
+git_hct = git_repo.head.commit.tree
+git_docs_tree = git_hct['documents']
+git_html_tree = git_docs_tree['html']
+git_md_tree = git_docs_tree['md']
 
 def isNewVersion(tosDom):
     return True
@@ -160,6 +168,16 @@ def saveTestCase(tosDoc, md, filename):
     saveHtmlToDisk(tosDoc, filename, fileTime)
 
     return SUCCESS
+    
+def writeMdHtml(filenames, md, html):
+
+        f = codecs.open(filenames[0], 'w', UNICODE_ENCODING)
+        f.write(md)
+        f.close()
+
+        f = codecs.open(filenames[1], 'w', UNICODE_ENCODING)
+        f.write(xpathResults[0])
+        f.close()
 
 def fetch(org, doc):
     """
@@ -256,8 +274,14 @@ def fetchAndProcess(org, doc, t):
         #   1.) Check if this document is in the repo. If no, go to step 3
         #   2.) Compare md of retrieved version with md of most recent version
         #   3.) If different, overwrite git version of html and md with retrieved version
-        
-        
+        #if not os.path.isdir(MD_DIR + org): os.mkdir(MD_DIR + org)
+        #if not os.path.isdir(HTML_DIR + org): os.mkdir(HTML_DIR + org)
+
+        #filenames = [   MD_DIR + org + "/" + doc + ".md",
+        #                HTML_DIR + org + "/" + doc + ".html"]
+        #if not os.path.exists(filenames[0]) or not os.path.exists(filenames[1]):
+        #    writeMdHtml(filenames, md, xpathResults[0])
+
         #saveTestCase(divHTML, md, k)
         return md
     except (UrlNotFound, XpathNotFound) as e:
