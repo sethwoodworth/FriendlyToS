@@ -15,6 +15,7 @@ from Markdownipy import Markdownipy
 from git import *
 import codecs
 import logging
+import hashlib
 import os
 
 # Set our Unicode enconding of choice
@@ -42,11 +43,6 @@ MD_DIR = DOCUMENTS_DIR + "md/"
 HTML_DIR = DOCUMENTS_DIR + "html/"
 
 git_repo = Repo("../../../Docs")
-git_stage = git_repo.index
-git_hct = git_repo.head.commit.tree
-git_docs_tree = git_hct['documents']
-git_html_tree = git_docs_tree['html']
-git_md_tree = git_docs_tree['md']
 
 def isNewVersion(tosDom):
     return True
@@ -169,6 +165,30 @@ def saveTestCase(tosDoc, md, filename):
 
     return SUCCESS
     
+def setGitVars():
+    global git_stage, git_hct, git_docs_tree, git_html_tree, git_md_tree 
+
+    git_stage = git_repo.index
+    git_hct = git_repo.head.commit.tree
+    git_docs_tree = git_hct['documents']
+    git_html_tree = git_docs_tree['html']
+    git_md_tree = git_docs_tree['md']
+
+setGitVars()
+
+def gitHash(data):
+    """
+        This function assumes data is unicode
+    """
+    if not isinstance(data, unicode):
+        raise ValueError("Expecting unicode, received " + `type(data)`)
+
+    s = hashlib.sha1()
+    data_str = data.encode(UNICODE_ENCODING)
+    s.update("blob %u\0" % len(data_str))
+    s.update(data_str)
+    return s.hexdigest()
+
 def writeMdHtml(filenames, md, html):
 
         f = codecs.open(filenames[0], 'w', UNICODE_ENCODING)
@@ -176,7 +196,7 @@ def writeMdHtml(filenames, md, html):
         f.close()
 
         f = codecs.open(filenames[1], 'w', UNICODE_ENCODING)
-        f.write(xpathResults[0])
+        f.write(html)
         f.close()
 
 def fetch(org, doc):
@@ -269,18 +289,35 @@ def fetchAndProcess(org, doc, t):
         if isinstance(md, str):
             md = unicode(md, UNICODE_ENCODING)
 
-        # Want this to work with git instead
-        # Steps:
-        #   1.) Check if this document is in the repo. If no, go to step 3
-        #   2.) Compare md of retrieved version with md of most recent version
-        #   3.) If different, overwrite git version of html and md with retrieved version
-        #if not os.path.isdir(MD_DIR + org): os.mkdir(MD_DIR + org)
-        #if not os.path.isdir(HTML_DIR + org): os.mkdir(HTML_DIR + org)
 
-        #filenames = [   MD_DIR + org + "/" + doc + ".md",
-        #                HTML_DIR + org + "/" + doc + ".html"]
-        #if not os.path.exists(filenames[0]) or not os.path.exists(filenames[1]):
-        #    writeMdHtml(filenames, md, xpathResults[0])
+        # Interact with git
+        # First make sure the organization's folders exist
+        if not os.path.isdir(MD_DIR + org): os.mkdir(MD_DIR + org)
+        if not os.path.isdir(HTML_DIR + org): os.mkdir(HTML_DIR + org)
+
+        # Then see if the document is new or not
+        filenames = [   MD_DIR + org + "/" + doc + ".md",
+                        HTML_DIR + org + "/" + doc + ".html"]
+        gitpaths = [    'documents/md/' + org + '/' + doc + '.md',
+                        'documents/html/' + org + '/' + doc + '.html']
+        if not os.path.exists(filenames[0]) or not os.path.exists(filenames[1]) \
+                or not 'documents/md/' + org in git_md_tree or not 'documents/html/' + org in git_html_tree \
+                or not gitpaths[0] in git_md_tree[org] or not gitpaths[1] in git_html_tree[org]:
+            # New document
+            writeMdHtml(filenames, md, divHTML)
+            git_stage.add(gitpaths)
+            git_stage.commit("Added " + org + " : " + doc)
+            setGitVars()
+            print "Added a new document"
+        elif git_md_tree[org][doc + '.md'].hexsha != gitHash(md): 
+            # Existing document that is updated
+            writeMdHtml(filenames, md, divHTML)
+            git_stage.add(gitpaths)
+            git_stage.commit("Updated " + org + " : " + doc)
+            setGitVars()
+            print "Updated a document"
+        else:
+            print "No changes"
 
         #saveTestCase(divHTML, md, k)
         return md
