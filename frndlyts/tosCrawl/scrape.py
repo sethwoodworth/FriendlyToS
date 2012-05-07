@@ -17,6 +17,7 @@ import codecs
 import logging
 import hashlib
 import os
+import subprocess
 
 # Set our Unicode enconding of choice
 UNICODE_ENCODING = 'utf-8'
@@ -30,6 +31,15 @@ SUCCESS = 200
 MD_ALREADY_EXISTS = 310
 HTML_ALREADY_EXISTS = 311
 
+# Git Variables
+GIT_USER_NAME = "Tos Bot"
+GIT_USER_EMAIL = "tosbot@friendlytos.org"
+REPO_DIR = "../../../Docs/"
+DOCUMENTS_DIR = REPO_DIR + "documents/"
+MD_DIR = DOCUMENTS_DIR + "md/"
+HTML_DIR = DOCUMENTS_DIR + "html/"
+
+
 class UrlNotFound(Exception): pass
 class XpathNotFound(Exception): pass
 
@@ -38,11 +48,8 @@ logging.basicConfig(filename='scrape.log',
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d-%y %H:%M:%S')
 
-DOCUMENTS_DIR = "../../../Docs/documents/"
-MD_DIR = DOCUMENTS_DIR + "md/"
-HTML_DIR = DOCUMENTS_DIR + "html/"
 
-git_repo = Repo("../../../Docs")
+git_repo = Repo(REPO_DIR)
 
 def isNewVersion(tosDom):
     return True
@@ -189,6 +196,30 @@ def gitHash(data):
     s.update(data_str)
     return s.hexdigest()
 
+def gitAdd(filename):
+    """
+        Adds the provided filename to the git stage, with attribution to the FriendlyTos Bot.
+
+        Variables that control the repo location and attribution are at the top of the file.
+    """
+    cmd = ['git', 
+            '-c', 'user.name=\'' + GIT_USER_NAME + '\'',
+            '-c', 'user.email=\'' + GIT_USER_EMAIL + '\'',
+            'add', filename]
+    subprocess.check_call(cmd, cwd=REPO_DIR)
+
+def gitCommit(message):
+    """
+        Commits whatever is currently staged, with attribution to the FriendlyToS Bot.
+
+        Variables that control the repo location and attribution are at the top of the file.
+    """
+    cmd = ['git',
+            '-c', 'user.name=\'' + GIT_USER_NAME + '\'',
+            '-c', 'user.email=\'' + GIT_USER_EMAIL + '\'',
+            'commit', '-m', message]
+    subprocess.check_call(cmd, cwd=REPO_DIR)
+
 def writeMdHtml(filenames, md, html):
 
         f = codecs.open(filenames[0], 'w', UNICODE_ENCODING)
@@ -305,21 +336,22 @@ def fetchAndProcess(org, doc, t):
                 or not gitpaths[0] in git_md_tree[org] or not gitpaths[1] in git_html_tree[org]:
             # New document
             writeMdHtml(filenames, md, divHTML)
-            git_stage.add(gitpaths)
-            git_stage.commit("Added " + org + " : " + doc)
+            gitAdd(gitpaths[0])
+            gitAdd(gitpaths[1])
+            gitCommit("Added " + org + " : " + doc)
             setGitVars()
             print "Added a new document"
         elif git_md_tree[org][doc + '.md'].hexsha != gitHash(md): 
             # Existing document that is updated
             writeMdHtml(filenames, md, divHTML)
-            git_stage.add(gitpaths)
-            git_stage.commit("Updated " + org + " : " + doc)
+            gitAdd(gitpaths[0])
+            gitAdd(gitpaths[1])
+            gitCommit("Updated " + org + " : " + doc)
             setGitVars()
             print "Updated a document"
         else:
             print "No changes"
 
-        #saveTestCase(divHTML, md, k)
         return md
     except (UrlNotFound, XpathNotFound) as e:
         logging.warning(e)
