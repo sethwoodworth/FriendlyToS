@@ -17,6 +17,7 @@ import codecs
 import logging
 import hashlib
 import os
+import re
 import subprocess
 import urllib
 import urlparse
@@ -53,8 +54,14 @@ logging.basicConfig(filename='scrape.log',
 
 git_repo = Repo(REPO_DIR)
 
-def isNewVersion(tosDom):
-    return True
+def isNewVersion(challengeMd, savedMdPath):
+
+    with codecs.open(savedMdPath, 'r', UNICODE_ENCODING) as f:
+        savedMd = f.read()
+
+    lm_savedMd = re.sub(r'\[(.*)\]\(.*\)', r'[\1]()',savedMd)
+    lm_challengeMd = re.sub(r'\[(.*)\]\(.*\)', r'[\1]()',challengeMd)
+    return gitHash(lm_savedMd) != gitHash(lm_challengeMd)
 
 def getCurrentDatetime():
     """
@@ -311,7 +318,7 @@ def fetchAndProcess(org, doc, t):
 
         # Rewrite links to be absolute where needed
         def link_repl(href):
-            if href[0] == "#" or href[:6].lower() == 'mailto':
+            if len(href) == 0 or href[0] == "#" or (len(href) > 6 and href[:6].lower() == 'mailto'):
                 return href
             else:
                 return urlparse.urljoin(tosDom.base_url, href)
@@ -328,7 +335,6 @@ def fetchAndProcess(org, doc, t):
 
         if isinstance(md, str):
             md = unicode(md, UNICODE_ENCODING)
-
 
         # Interact with git
         # First make sure the organization's folders exist
@@ -350,7 +356,7 @@ def fetchAndProcess(org, doc, t):
             gitCommit("Added " + org + " : " + doc)
             setGitVars()
             print "Added a new document"
-        elif git_md_tree[org][doc + '.md'].hexsha != gitHash(md): 
+        elif isNewVersion(md, filenames[0]): 
             # Existing document that is updated
             writeMdHtml(filenames, md, divHTML)
             gitAdd(gitpaths[0])
@@ -377,4 +383,4 @@ def checkAll(t):
             else: print "Failed"
     
 
-t = Markdownipy(True,True)
+t = Markdownipy(True,False)
