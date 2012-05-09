@@ -18,6 +18,8 @@ import logging
 import hashlib
 import os
 import subprocess
+import urllib
+import urlparse
 
 # Set our Unicode enconding of choice
 UNICODE_ENCODING = 'utf-8'
@@ -247,8 +249,6 @@ def fetch(org, doc):
     if not doc in sites[org]:
         raise ValueError(doc + " was not found in sites['" + org + "']")
         
-    import urllib
-
     # Need to set the agentString, as some sites get snotty with uncommon agents
     class CrawlrURLOpener(urllib.FancyURLopener):
         version = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21"
@@ -260,6 +260,7 @@ def fetch(org, doc):
 
     # Retreive the webpage
     socket = urllib.urlopen(sites[org][doc]['url'])
+    real_url = socket.geturl()
     print "HTTP Code: %(code)d" % {"code": socket.getcode()}
     if socket.getcode() == 404:
         raise UrlNotFound('404: The page  %(url)s could not be found.' % {'url':sites[org][doc]['url']})
@@ -273,7 +274,7 @@ def fetch(org, doc):
     # Turn it into unicode
     tosDocUni = unicode(tosDoc, charset)
 
-    return tosDocUni
+    return (tosDocUni, real_url)
 
 def listify(text):
     """
@@ -301,13 +302,21 @@ def listify(text):
 # t is an instance of Markdownipy
 def fetchAndProcess(org, doc, t):
     try:
-        tosHtml = fetch(org, doc)      # Retrieve the string of HTMl that makes up the page
+        (tosHtml, real_url) = fetch(org, doc)      # Retrieve the string of HTMl that makes up the page
 
         # For DEBUG, print out the recieved page
         with codecs.open('raw.html', 'w', UNICODE_ENCODING) as f:
             f.write(tosHtml)
+        tosDom = html.fromstring(tosHtml, real_url)    # Convert string of HTML into an lxml.html.HtmlElement
 
-        tosDom = html.fromstring(tosHtml)    # Convert string of HTML into an lxml.html.HtmlElement
+        # Rewrite links to be absolute where needed
+        def link_repl(href):
+            if href[0] == "#" or href[:6].lower() == 'mailto':
+                return href
+            else:
+                return urlparse.urljoin(tosDom.base_url, href)
+        tosDom.rewrite_links(link_repl)
+
         xpathResults = tosDom.xpath(sites[org][doc]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
         
         if len(xpathResults) == 0:
