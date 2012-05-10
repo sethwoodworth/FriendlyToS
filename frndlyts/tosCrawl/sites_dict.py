@@ -12,11 +12,11 @@ sites = {
     },
     'Amazon': {
 	    'Bill of Rights': {'url': 'http://www.amazon.com/gp/help/customer/display.html?nodeId=508092',
-		    'xpath': '/html/body/table/tbody/tr/td[2]'},
+		    'xpath': '/html/body/table/tr[1]/td[2]/node()[not(@class="cBox primary")]'},
 	    'Conditions of Use': {'url': 'http://www.amazon.com/gp/help/customer/display.html?nodeId=508088',
-		    'xpath': '/html/body/table/tbody/tr/td[2]'},
+		    'xpath': '/html/body/table/tr[1]/td[2]/node()[not(@class="cBox primary")]'},
 	    'Privacy Notice': {'url': 'http://www.amazon.com/gp/help/customer/display.html?nodeId=468496',
-		    'xpath': '/html/body/table/tbody/tr/td[2]'}
+		    'xpath': '/html/body/table/tr[1]/td[2]/span[1]'}
     },
     'AOL': {
         'Privacy Policy': {'url': 'http://privacy.aol.com/privacy-policy/',

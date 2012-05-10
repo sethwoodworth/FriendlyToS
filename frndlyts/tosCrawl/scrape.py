@@ -328,10 +328,13 @@ def fetchAndProcess(org, doc, t):
         
         if len(xpathResults) == 0:
             raise XpathNotFound('The xpath query for ' + org + " : " + doc + ' yielded zero results') 
-        # Ideally, there will only be one element that matches our xpath query. Thus, xpathResults should only have one element.
-        # Though it hasn't been tested, the translator should support a list of results
-        divHTML = etree.tostring(xpathResults[0], encoding=unicode, method='html')
-        md = t.translate(html.fromstring(divHTML))
+        divHTML = ''
+        for rlt in xpathResults:
+            if isinstance(rlt, etree.ElementBase):
+                divHTML = divHTML + etree.tostring(rlt, encoding=unicode, method='html')
+            else:
+                divHTML = divHTML + rlt
+        md = t.translate(divHTML)
 
         if isinstance(md, str):
             md = unicode(md, UNICODE_ENCODING)

@@ -295,10 +295,14 @@ class Markdownipy(object):
         if isinstance(html, HtmlElement):
             html_str = lxml.etree.tostring(html, encoding=unicode, method='html')
         elif isinstance(html, str):
+            html_str = unicode(html)
+        elif isinstance(html, unicode):
             html_str = html
         else:
-            raise ValueError("Expecting str or lxml.HtmlElement, received " \
+            raise ValueError("Expecting unicode, str, or lxml.HtmlElement, received " \
                             + `type(html)`)
+
+        if len(html_str.strip()) == 0: return ''
 
         # Escape Markdown characters and remove some tags
         html_str = html_str.replace('[','\[').replace(']','\]')
