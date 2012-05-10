@@ -62,9 +62,9 @@ sites = {
     },
     'eBay': {
 	    'Privacy Policy': {'url': 'http://pages.ebay.com/help/policies/privacy-policy.html',
-		    'xpath': '/html/body/div/div/table[2]/tbody/tr[3]/td[3]/table/tbody/tr/td/div/form/div/div[2]'},
+		    'xpath': '//div[@class="HelpContent"]/form/div/div[2]'},
 	    'User Agreement': {'url': 'http://pages.ebay.com/help/policies/user-agreement.html',
-		    'xpath': '/html/body/div/div/table[2]/tbody/tr[3]/td[3]/table/tbody/tr/td/div/form/div/div[2]'}
+		    'xpath': '//div[@class="HelpContent"]/form/div/div[2]'}
     },
     'Google': {
         'Privacy Policy': {'url': 'http://www.google.com/intl/en/policies/privacy/',

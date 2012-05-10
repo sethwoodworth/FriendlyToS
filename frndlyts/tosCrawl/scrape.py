@@ -19,7 +19,7 @@ import hashlib
 import os
 import re
 import subprocess
-import urllib
+import urllib2
 import urlparse
 
 # Set our Unicode enconding of choice
@@ -257,24 +257,26 @@ def fetch(org, doc):
         raise ValueError(doc + " was not found in sites['" + org + "']")
         
     # Need to set the agentString, as some sites get snotty with uncommon agents
-    class CrawlrURLOpener(urllib.FancyURLopener):
-        version = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21"
-
-    urllib._urlopen = CrawlrURLOpener()
+    #class CrawlrURLOpener(urllib.FancyURLopener):
+    #    version = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21"
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+    socket = opener.open(sites[org][doc]['url'])
+    #urllib._urlopen = CrawlrURLOpener()
 
     # urllib doesn't play well with https, so make sure we don't connect via
     # https
 
     # Retreive the webpage
-    socket = urllib.urlopen(sites[org][doc]['url'])
-    real_url = socket.geturl()
+    #socket = urllib.urlopen(sites[org][doc]['url'])
+    real_url = socket.url
     print "HTTP Code: %(code)d" % {"code": socket.getcode()}
-    if socket.getcode() == 404:
+    if socket.code == 404:
         raise UrlNotFound('404: The page  %(url)s could not be found.' % {'url':sites[org][doc]['url']})
-    elif socket.getcode() == 403:
+    elif socket.code == 403:
         raise UrlNotFound('403: The page %(url)s is forbidden.' % {'url':sites[org][doc]['url']})
     charset = UNICODE_ENCODING
-    if socket.info().getparam('charset'): charset = socket.info().getparam('charset') 
+    if socket.headers.getparam('charset'): charset = socket.headers.getparam('charset') 
     tosDoc = socket.read()
     socket.close()
 

@@ -108,7 +108,7 @@ class Markdownipy(object):
     #translator['u'] = lambda self,el : el.text_content()
 
     # ------Images------
-    translator['img'] = lambda self,el : "![" + el.attrib['alt'] + "](" + el.attrib['src'] + ")"
+    translator['img'] = lambda self,el : "![" + (el.attrib['alt'] if 'alt' in el.attrib else '') + "](" + el.attrib['src'] + ")"
 
     # ------Headings------
     def pre_heading(self,el):
