@@ -39,8 +39,6 @@ GIT_USER_NAME = "Tos Bot"
 GIT_USER_EMAIL = "tosbot@friendlytos.org"
 REPO_DIR = "../../../Docs/"
 DOCUMENTS_DIR = REPO_DIR + "documents/"
-MD_DIR = DOCUMENTS_DIR + "md/"
-HTML_DIR = DOCUMENTS_DIR + "html/"
 
 
 class UrlNotFound(Exception): pass
@@ -187,8 +185,6 @@ def setGitVars():
     git_stage = git_repo.index
     git_hct = git_repo.head.commit.tree
     git_docs_tree = git_hct['documents']
-    git_html_tree = git_docs_tree['html']
-    git_md_tree = git_docs_tree['md']
 
 setGitVars()
 
@@ -257,18 +253,11 @@ def fetch(org, doc):
         raise ValueError(doc + " was not found in sites['" + org + "']")
         
     # Need to set the agentString, as some sites get snotty with uncommon agents
-    #class CrawlrURLOpener(urllib.FancyURLopener):
-    #    version = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21"
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     socket = opener.open(sites[org][doc]['url'])
-    #urllib._urlopen = CrawlrURLOpener()
-
-    # urllib doesn't play well with https, so make sure we don't connect via
-    # https
 
     # Retreive the webpage
-    #socket = urllib.urlopen(sites[org][doc]['url'])
     real_url = socket.url
     print "HTTP Code: %(code)d" % {"code": socket.getcode()}
     if socket.code == 404:
@@ -326,7 +315,8 @@ def fetchAndProcess(org, doc, t):
                 return urlparse.urljoin(tosDom.base_url, href)
         tosDom.rewrite_links(link_repl)
 
-        xpathResults = tosDom.xpath(sites[org][doc]['xpath']) # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
+        # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
+        xpathResults = tosDom.xpath(sites[org][doc]['xpath']) 
         
         if len(xpathResults) == 0:
             raise XpathNotFound('The xpath query for ' + org + " : " + doc + ' yielded zero results') 
@@ -343,17 +333,18 @@ def fetchAndProcess(org, doc, t):
 
         # Interact with git
         # First make sure the organization's folders exist
-        if not os.path.isdir(MD_DIR + org): os.mkdir(MD_DIR + org)
-        if not os.path.isdir(HTML_DIR + org): os.mkdir(HTML_DIR + org)
+        #if not os.path.isdir(MD_DIR + org): os.mkdir(MD_DIR + org)
+        #if not os.path.isdir(HTML_DIR + org): os.mkdir(HTML_DIR + org)
+        if not os.path.isdir(DOCUMENTS_DIR + org): os.mkdir(DOCUMENTS_DIR + org)
 
         # Then see if the document is new or not
-        filenames = [   MD_DIR + org + "/" + doc + ".md",
-                        HTML_DIR + org + "/" + doc + ".html"]
-        gitpaths = [    'documents/md/' + org + '/' + doc + '.md',
-                        'documents/html/' + org + '/' + doc + '.html']
+        filenames = [   DOCUMENTS_DIR + org + "/" + doc + ".md",
+                        DOCUMENTS_DIR + org + "/" + doc + ".html"]
+        gitpaths = [    'documents/' + org + '/' + doc + '.md',
+                        'documents/' + org + '/' + doc + '.html']
         if not os.path.exists(filenames[0]) or not os.path.exists(filenames[1]) \
-                or not 'documents/md/' + org in git_md_tree or not 'documents/html/' + org in git_html_tree \
-                or not gitpaths[0] in git_md_tree[org] or not gitpaths[1] in git_html_tree[org]:
+                or not 'documents/' + org in git_docs_tree  \
+                or not gitpaths[0] in git_docs_tree[org] or not gitpaths[1] in git_docs_tree[org]:
             # New document
             writeMdHtml(filenames, md, divHTML)
             gitAdd(gitpaths[0])

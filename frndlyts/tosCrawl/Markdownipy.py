@@ -9,7 +9,7 @@ class Markdownipy(object):
 
     # Define which elements are block level, cause they're special
     # Maybe poor name - this set refers to HTML elements that will cause newlines in MD.
-    block_level = {'blockquote','br','dd','div','dl','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','td','ul'}
+    block_level = {'blockquote','br','dd','div','dl','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','td','ul'}
 
     # Build the dictionary of element translators
 
@@ -28,7 +28,8 @@ class Markdownipy(object):
             return el.text_content().strip() + "\n"
 
     translator['li'] = translate_li
-    translator['dd'] = translator['li']
+    translator['dd'] = lambda self,el: el.text_content().strip() + "\n\n"
+    translator['dt'] = translator['dd']
 
     def translate_ul(self, el):
         if el.getparent() is not None and el.getparent().tag == 'li':
@@ -89,7 +90,7 @@ class Markdownipy(object):
     # ------Bold and Strong------
     # MD breaks when there is spacing between the markup and the content
     # MD Bold doesn't work across line breaks, so wrap seperate paragraphs in their own bolds
-    translator['b'] = lambda self,el : "**" + re.sub(r'\n{2,}', '**\n\n' + self.indent_list(False) + '**', el.text_content().strip()) + "**"
+    translator['b'] = lambda self,el : "**" + re.sub(r'\n{2,}', '**\n\n' + self.indent_list(False) + '**', el.text_content().strip()) + "**" if el.text_content().strip() != '' else ''
     translator['strong'] = translator['b']
 
     # ------Italics and Emphasis------
@@ -198,7 +199,9 @@ class Markdownipy(object):
 
         # For certain tags, skip translation entirely
         if el.tag in {'table'}:
-            return lxml.etree.tostring(el, encoding=unicode, method='html')
+            raw = lxml.etree.tostring(el, encoding=unicode, method='html')
+            el.clear()
+            return raw
 
         # Translate depth first
         i = 1   # Used to numerate ols
@@ -212,8 +215,15 @@ class Markdownipy(object):
                 translated = self.recursiveTranslate(child)
                 child.text = self.indent_list(True) + `i` + ". " + translated
                 i += 1
+            elif el.tag == 'dl' and (child.tag == 'dt' or child.tag == 'dd') and self.tl:
+                translated = self.recursiveTranslate(child)
+                # DTs should be indented as a ul or ol, while a dd should be indented as content of a ul or ol.
+                if child.tag == 'dt':
+                    child.text = self.indent_list(True) + translated
+                elif child.tag == 'dd':
+                    child.text = self.indent_list(False) + translated
             else:
-                if child.tag in {'ol','ul'}:
+                if child.tag in {'ol','ul','dl'}:
                     self.list_level += 1
                     child.text = self.recursiveTranslate(child)
                     self.list_level -= 1
@@ -304,7 +314,7 @@ class Markdownipy(object):
 
         if len(html_str.strip()) == 0: return ''
 
-        # Escape Markdown characters and remove some tags
+        # Escape Markdown characters and remove some tags without removing their content
         html_str = html_str.replace('[','\[').replace(']','\]')
         c = Cleaner(forms=False, annoying_tags=False, remove_tags=['u'])
         html_str = c.clean_html(html_str)
@@ -315,6 +325,9 @@ class Markdownipy(object):
         el = lxml.html.fromstring(html_str, parser=psr)
 
         for node in el.iter():
+            # Remove style tags
+            if node.tag == 'style':
+                node.drop_tree()
             # Remove whitespace surrounding any block level elements
             if node.tag in Markdownipy.block_level:
                 parent = node.getparent()
