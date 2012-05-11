@@ -88,14 +88,32 @@ class Markdownipy(object):
     translator['span'] = lambda self,el : el.text_content()
 
     # ------Bold and Strong------
+    # Return nothing if the element does not contain content, to prevent hr or bare ****
+    # If the bold is the leading element/content on a line, make sure we add list indentation
     # MD breaks when there is spacing between the markup and the content
     # MD Bold doesn't work across line breaks, so wrap seperate paragraphs in their own bolds
-    translator['b'] = lambda self,el : "**" + re.sub(r'\n{2,}', '**\n\n' + self.indent_list(False) + '**', el.text_content().strip()) + "**" if el.text_content().strip() != '' else ''
+    def translate_b(self,el):
+        if el.text_content().strip() == '': return ''
+        parent = el.getparent()
+        prepend = ''
+        if parent is not None and parent.text is not None and parent.text.split('\n')[-1].strip() == '':
+            prepend = self.indent_list(False) 
+        return prepend + "**" + re.sub(r'\n{2,}', '**\n\n' + self.indent_list(False) + '**', el.text_content().strip()) + "**"
+    translator['b'] = translate_b
     translator['strong'] = translator['b']
 
     # ------Italics and Emphasis------
     # MD breaks when there is spacing between the markup and the content
-    translator['i'] = lambda self,el : "*" + re.sub(r'\n{2,}', '*\n\n' + self.indent_list(False) + '*', el.text_content().strip()) + "*"
+    # MD italics don't work across line breaks, so wrap seperate paragraphs in their own italices
+    def translate_i(self,el):
+        if el.text_content().strip() == '': return ''
+        parent = el.getparent()
+        prepend = ''
+        if parent is not None and parent.text is not None and parent.text.split('\n')[-1].strip() == '':
+            prepend = self.indent_list(False)
+        return "*" + re.sub(r'\n{2,}', '*\n\n' + self.indent_list(False) + '*', el.text_content().strip()) + "*"
+    translator['i'] = translate_i 
+
     translator['em'] = translator['i']
 
     # ------Code------
@@ -116,7 +134,7 @@ class Markdownipy(object):
         # Special case of a heading being the first content of an li.
         parent = el.getparent()
         left_sib = el.getprevious()
-        if parent and parent.tag == 'li' and left_sib is None \
+        if parent is not None and parent.tag == 'li' and left_sib is None \
                 and (parent.text is None or parent.text.strip() == ''):
             return ''
         return "\n" + self.indent_list(False)
@@ -333,12 +351,12 @@ class Markdownipy(object):
                 parent = node.getparent()
                 left_sib = node.getprevious()
                 # Remove whitespace to the left
-                if left_sib:
+                if left_sib is not None:
                     # left_sib.tail == None indicates there is no whitespace,
                     # our goal condition. So don't do anything.
                     if left_sib.tail:
                         left_sib.tail = left_sib.tail.rstrip()
-                elif parent and parent.text:
+                elif parent is not None and parent.text:
                         parent.text = parent.text.rstrip()
                 # Remove whitespace to the right
                 if node.tail:
@@ -347,7 +365,7 @@ class Markdownipy(object):
                 # Remove newlines inside of blocklevels, except for pre and blockquote
                 if node.tag in Markdownipy.block_level - {'blockquote','pre'} and node.text:
                     node.text = ' '.join(node.text.split('\n'))
-                if parent and parent.tag in Markdownipy.block_level - {'blockquote','pre'} and node.tail:
+                if parent is not None and parent.tag in Markdownipy.block_level - {'blockquote','pre'} and node.tail:
                     node.tail = ' '.join(node.tail.split('\n'))
                 
 
