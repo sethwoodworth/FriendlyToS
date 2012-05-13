@@ -28,7 +28,7 @@ sites = {
 	    'Privacy Policy': {'url': 'http://www.craigslist.org/about/privacy_policy',
 		    'xpath': '/html/body/div/div[2]/div'},
 	    'Terms of Use': {'url': 'http://www.craigslist.org/about/terms.of.use',
-		    'xpath': '/html/body/blockquote'}
+		    'xpath': '/html/body/blockquote/*'}
     },
     'Digg': {
         'Privacy Policy': {'url': 'http://about.digg.com/privacy',
