@@ -1,0 +1,2 @@
+django-guardian
+easy_thumbnails
