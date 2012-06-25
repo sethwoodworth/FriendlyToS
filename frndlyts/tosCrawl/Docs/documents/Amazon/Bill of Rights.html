@@ -1,0 +1,175 @@
+
+   
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<a name="YourAmazon.comBill"></a><b class="sans"><font color="#cc6600">Your Amazon.com Bill of Rights</font></b><br><p>1. <b>Safe shopping.</b> When you shop at Amazon.com, you'll be one of millions of customers who have safely shopped with us without credit card fraud.</p>&#13;
+
+<p>2. <b>No obligation.</b> Our Personal Notification Services, such as Amazon.com Alerts and E-mail Me When Available, are provided free of charge, and you are under no obligation to buy anything. </p>&#13;
+
+<p>3. <b>Unsubscribing.</b> You can unsubscribe or change your subscription to any of our Personal Notification Services at any time. Simply visit your <a href="http://www.amazon.com/gp/help/customer/display.html/ref=hp_508092_subscriptions?nodeId=468552">Amazon.com Subscriptions</a> page to modify your subscriptions online. </p>&#13;
+
+<p>4. <b>Amazon.com Updates.</b> As a customer, subscriber, or contest entrant, you will occasionally receive e-mail updates about important functionality changes to the Web site, new Amazon.com services, and special offers we think you'll find valuable. But if you'd rather not receive them, please visit your <a href="http://www.amazon.com/gp/help/customer/display.html/ref=hp_508092_subscriptions2?nodeId=468552">Amazon.com Subscriptions</a> page to change your preferences. </p>&#13;
+
+<p>5. <b>Privacy.</b> Amazon.com knows that you care about how information about you is used and shared, and we appreciate the trust that you place in us. That's why we post a Privacy Notice in our store. Simply stated, our Privacy Notice explains what information we collect from you, how we use that information, and what choices you have with respect to that information. For more details, please read the <a href="http://www.amazon.com/gp/help/customer/display.html/ref=hp_508092_privacy?nodeId=468496">Amazon.com Privacy Notice</a>.</p><span class="focus cs-none">Read your Amazon.com Bill of Rights here.</span>
+
+    
+    
+    
+
+
+
+
+
+  
+
+
+    
+    
+    
+
+
+
+
+
+  
+<script language="javascript">
+  if ( ! window.stageMarkers) {
+     window.stageMarkers = {};
+     window.stageMarkers.count = {};
+     window.stageMarkers.stage = function (stage, t) {
+       window.stageMarkers.count[stage] = 1 + (window.stageMarkers.count[stage] ? window.stageMarkers.count[stage] : 0);
+       if (window.stageMarkers.count[stage] >= t) {
+         amznJQ.completedStage(stage);
+       }
+     }
+  }
+</script><div style="display:none;" id="cf-div"> 
+<img onload="if (typeof uet == 'function') { uet('cf'); }" src="http://g-ecx.images-amazon.com/images/G/01/x-locale/common/transparent-pixel._V192234675_.gif" width="1" alt="" height="1" border="0"><img onload="if (typeof uet == 'function') { uet('cf'); }" src="http://ecx.images-amazon.com/images/G/01/x-locale/common/transparent-pixel._V192234675_.gif" width="1" alt="" height="1" border="0"></div>                                                                                                                                          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                                                                                          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+var searchAheadJS = {};
+searchAheadJS.textFieldChanged = false;
+
+searchAheadJS.removeText = function( context, default_value ) {
+    jQuery(context).removeClass('default-text').addClass('focus-text');
+    if(context.value === default_value) {
+      context.value = '';
+    }
+};
+
+searchAheadJS.addText = function( context, default_value ) {
+    if(context.value === '') {
+      jQuery(context).removeClass('focus-text').addClass('default-text');
+      context.value = default_value;
+    }
+};
+
+searchAheadJS.buildUiChangeFuncList = function () {
+    searchAheadJS.textFieldFocusFunctions = [
+        searchAheadJS.removeText
+    ];
+    
+    searchAheadJS.textFieldBlurFunctions = [
+        searchAheadJS.addText
+    ];
+};
+
+amznJQ.onReady('JQuery', function() {
+
+   searchAheadJS.buildUiChangeFuncList();
+   var helpSearchInput = jQuery('#helpsearch');
+   var default_value = 'Topic or Keyword';
+   if(helpSearchInput.val() === '') {
+       helpSearchInput.addClass( 'default-text'  );
+       helpSearchInput.attr('value', default_value);
+   }
+   
+   helpSearchInput.each(function() {
+     var input = jQuery(this);
+     input.focus(function() {
+           var curContext = this;
+           jQuery.each( searchAheadJS.textFieldFocusFunctions, 
+               function ( index, textFieldFocusFunction ) {
+                    textFieldFocusFunction(curContext, default_value);
+               });
+                    
+     });
+     input.blur(function() {
+           var curContext = this;
+           jQuery.each( searchAheadJS.textFieldBlurFunctions, 
+               function ( index, textFieldBlurFunction ) {
+                    textFieldBlurFunction(curContext, default_value);
+               });
+
+     });
+     input.keyup( function() {
+         this.value === '' ? 
+            searchAheadJS.textFieldChanged = false :
+                searchAheadJS.textFieldChanged = true;
+     });
+   });
+
+   jQuery('#search-help').submit( function () {
+        if ( (helpSearchInput.val() !== '') && 
+            searchAheadJS.textFieldChanged ) {
+            return true;
+        } else {
+            return false;
+        }
+      }
+    );
+   
+ });
+
+</script>
