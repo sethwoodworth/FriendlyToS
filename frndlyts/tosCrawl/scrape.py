@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding:utf8 -*-
+
 # Testing lxml and urllib here.
 #
 # Requires lxml - install via http://lxml.de/installation.html#installation or
@@ -37,7 +40,7 @@ HTML_ALREADY_EXISTS = 311
 # Git Variables
 GIT_USER_NAME = "Tos Bot"
 GIT_USER_EMAIL = "tosbot@friendlytos.org"
-REPO_DIR = "../../../Docs/"
+REPO_DIR = "./Docs/"
 DOCUMENTS_DIR = REPO_DIR + "documents/"
 
 
@@ -379,4 +382,9 @@ def checkAll(t):
             else: print "Failed"
     
 
+# FIXME: if this can be replaced by the instance in the if name = main, then it should be
 t = Markdownipy(True,False)
+
+if __name__=='__main__':
+    t = Markdownipy(True,False)
+    checkAll(t)

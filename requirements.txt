@@ -1,2 +1,4 @@
 django-guardian
 easy_thumbnails
+lxde
+gitpython
