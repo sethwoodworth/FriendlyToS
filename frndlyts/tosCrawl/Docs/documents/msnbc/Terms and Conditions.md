@@ -1,0 +1,134 @@
+
+
+****Restrictions on use****This site is owned and operated by MSNBC Interactive News LLC (“MSNBC.com”) and contains material which is derived in whole or in part from material supplied by MSNBC, NBC, The Associated Press, Reuters and other sources. The material on this site is protected by international copyright and trademark laws. You may not modify, copy, reproduce, republish, upload, post, transmit, or distribute in any way any material from this site including code and software without express permission from MSNBC or as permitted in 
+
+    
+    [         Reprint Requests     ](http://www.msnbc.msn.com/id/3303539/ns/about/t/reprint-requests/)
+. You may download material from this site for your personal, non-commercial use only, provided you keep intact all copyright and other proprietary notices.
+
+
+
+****Specific restrictions on use of Associated Press material****Associated Press text, photo, graphic, audio, and/or video material shall not be published, broadcast, rewritten for broadcast or publication or redistributed directly or indirectly in any medium. Neither these AP materials nor any portion thereof may be stored in a computer except for personal and non-commercial use. AP will not be held liable for any delays, inaccuracies, errors, or omissions therefrom, or in the transmission or delivery of all or any part thereof or for any damages arising from any of the above.
+
+
+
+****License to MSNBC****
+
+By posting messages, uploading files, inputting data, or engaging in any other form of communication through this service, you are granting MSNBC a royalty-free, perpetual, non-exclusive, unrestricted, worldwide license to:
+
+
+
+Use, copy, sublicense, adapt, transmit, publicly perform or display any such communication. Sublicense to third parties the unrestricted right to exercise any of the foregoing rights granted with respect to the communication.
+
+
+
+The foregoing grants shall include the right to exploit any proprietary rights in such communication, including but not limited to rights under copyright, trademark, servicemark or patent laws under any relevant jurisdiction.
+
+
+
+****Disclaimer****MSNBC has provided links and pointers to Internet sites maintained by third parties. Neither MSNBC, its parent or subsidiary companies, nor their affiliates operate or control in any respect any information, products or services on these third-party sites. The materials in this site and the third-party sites are provided "as is" and without warranties of any kind either express or implied. To the fullest extent permissible pursuant to applicable law, MSNBC disclaims all warranties, express or implied, including, but not limited to, implied warranties of merchantability and fitness for a particular purpose. MSNBC does not warrant that the functions contained in the materials will be uninterrupted or error-free, that defects will be corrected, or that this site, including bulletin boards, or the server that makes it available, are free of viruses or other harmful components. MSNBC does not warrant or make any representations regarding the use or the results of the use of the materials in this site or in third-party sites in terms of their correctness, accuracy, timeliness, reliability, or otherwise. You (and not MSNBC) assume the entire cost of all necessary maintenance, repair, or correction.
+
+
+
+****Limitation of liability****
+
+Under no circumstances, including, but not limited to, negligence, shall MSNBC, its subsidiary and parent companies or affiliates be liable for any direct, indirect, incidental, special or consequential damages that result from the use of, or the inability to use, MSNBC materials. You specifically acknowledge and agree that MSNBC is not liable for any defamatory, offensive or illegal conduct of any user. If you are dissatisfied with any MSNBC material, or with any of MSNBC's terms and conditions, your sole and exclusive remedy is to discontinue using MSNBC.
+
+
+
+****Termination****This agreement is effective until terminated by MSNBC, at any time without notice. In the event of termination, you are no longer authorized to access the bulletin boards and the restrictions imposed on you with respect to material downloaded from the bulletin boards, the disclaimers and limitations of liabilities set forth in this agreement, shall survive.
+
+
+
+****Other****
+
+This agreement shall be governed by and construed in accordance with the laws of the State of New York without giving effect to any principles or conflicts of law. If any provision of this agreement shall be unlawful, void or for any reason unenforceable, then that provision shall be deemed severable from this agreement and shall not affect the validity and enforceability of any remaining provisions.
+
+
+
+****Notices and procedure for making claims of copyright infringement****Pursuant to Title 17, United States Code, Section 512(c)(2), notifications of claimed copyright infringement should be sent to Service Provider's Designated Agent.
+
+
+
+[Advertise](http://www.msnbc.msn.com/id/31066137/media-kit/) | [AdChoices](http://g.msn.com/AIPRIV/en-us)
+
+
+
+THE FOLLOWING INFORMATION IS PROVIDED EXCLUSIVELY FOR NOTIFYING THE SERVICE PROVIDERS REFERENCED BELOW THAT YOUR COPYRIGHTED MATERIAL MAY HAVE BEEN INFRINGED. ALL OTHER INQUIRIES, SUCH AS REQUESTS FOR TECHNICAL ASSISTANCE, REPORTS OF EMAIL ABUSE, AND PIRACY REPORTS, WILL *NOT* RECEIVE A RESPONSE THROUGH THIS PROCESS.
+
+
+
+Written notification must be submitted to the following Designated Agent:
+
+
+
+Service Provider(s): Microsoft Corporation; The Microsoft Network, LLC; MSNBC Interactive News, LLC.
+
+
+
+Name of Agent designated to receive Notification of claimed infringement: M. Skelton
+
+
+
+Full address of Designated Agent to which Notification should be sent:
+
+> One Microsoft way, Redmond, WA 98052
+> 
+> Telephone Number of Designated Agent: (425) 703-5529
+> 
+> Facsimile Number of Designated Agent: (425) 936-7329
+> 
+> Email Address of Designated Agent: dmcaagnt@microsoft.com
+
+
+
+
+To be effective, the Notification must include the following:
+
+
+
+  1. A physical or electronic signature of a person authorized to act on behalf of the owner whose exclusive right is allegedly infringed;
+  2. Identification of the copyrighted work claimed to have been infringed, or if multiple copyrighted works at a single online site are covered by a single notification, a representative list of such works at that site;
+  3. Identification of the material that is claimed to be infringing or is the subject of infringing activity and that is to be removed or access to which is to be disabled, and information reasonably sufficient to permit the service provider to locate the material;
+  4. Information reasonably sufficient to permit the service provider to contact the Complaining Party, such as an address, telephone number, and if available, an electronic mail address at which the complaining party may be contacted;
+  5. A statement that the Complaining Party has good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law;
+  6. A statement that the information in the notification is accurate, and under penalty of perjury, that the Complaining Party is authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.
+
+
+
+
+Upon receipt of the written Notification containing the information as outlined in 1 through 6 above:
+
+
+
+  * Service Provider shall remove or disable access to the material that is alleged to be infringing;
+  * Service Provider shall forward the written notification to such alleged infringer ("Subscriber");
+  * Service Provider shall take reasonable steps to promptly notify the Subscriber that it has removed or disabled access to the material.
+
+
+
+
+Counter Notification: To be effective, a Counter Notification must be a written communication provided to the Service Provider's Designated Agent that includes substantially the following:
+
+
+
+[Advertise](http://www.msnbc.msn.com/id/31066137/media-kit/) | [AdChoices](http://g.msn.com/AIPRIV/en-us)
+
+
+
+  1. A physical or electronic signature of the Subscriber;
+  2. Identification of the material that has been removed or to which access has been disabled and the location at which the material appeared before it was removed or access to it was disabled;
+  3. A statement under penalty of perjury that the Subscriber has a good faith belief that the material was removed or disabled as a result of a mistake or misidentification of the material to be removed or disabled;
+  4. The Subscriber's name, address, and telephone number, and a statement that the Subscriber consents to the jurisdiction of Federal District Court for the judicial district in which the address is located, or if the Subscriber's address is outside of the United States, for any judicial district in which the Service Provider may be found, and that the Subscriber will accept service of process from the person who provided notification or an agent of such person.
+
+
+
+
+Upon receipt of a Counter Notification containing the information as outlined in 1 through 4 above:
+
+
+
+  * Service Provider shall promptly provide the Complaining Party with a copy of the Counter Notification;
+  * Service Provider shall inform the Complaining Party that it will replace the removed material or cease disabling access to it within ten (10) business days;
+  * Service Provider shall replace the removed material or cease disabling access to the material within ten (10) to fourteen (14) business days following receipt of the Counter Notification, provided Service Provider's Designated Agent has not received notice from the Complaining Party that an action has been filed seeking a court order to restrain Subscriber from engaging in infringing activity relating to the material on Service Provider's network or system.
+
