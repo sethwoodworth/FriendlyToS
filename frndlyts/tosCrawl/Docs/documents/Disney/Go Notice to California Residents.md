@@ -1,0 +1,13 @@
+
+
+<a name="pp1"></a>
+
+Notice to California Residents
+
+
+
+
+
+<table cellspacing="0" cellpadding="5" border="0"><tr><td class="copy"> If you are a California resident, California Civil Code Section 1798.83 permits you to request information regarding the disclosure of your personal information by a <a href="http://corporate.disney.go.com/corporate/pp.html#def_Member" name="lid=corp_pp_california/contentlink/link0/110822">member</a> company of The Walt Disney Family of Companies to a third party for the third party's direct marketing purposes. With respect to these entities, which are listed below, this privacy policy applies only to their activities within the State of California. To make such a request, please send an email to <a href="mailto:caprivacy.wdig@twdc.com" name="lid=corp_pp_california/contentlink/link1/110822">caprivacy.wdig@twdc.com</a> or write us:<br><br><div> CA Privacy Rights<br>Disney Interactive Media Group<br>500 South Buena Vista Street<br>Mail Code 7667<br>Burbank, CA  91521-7667<br></div><br><br>In your request, please specify the member of The Walt Disney Family of companies to which your request pertains.  If no member is specified, we will treat your request as pertaining to Disney Online.<br><br><div> ABC Cable Networks Group<br>Adventures by Disney Travel Services, Inc.<br>American Broadcasting Companies, Inc.<br>Buena Vista Catalogue Co.<br>Buena Vista Home Entertainment, Inc.<br>Buena Vista Magazines, Inc.<br>Buena Vista Theatrical Group Ltd.<br>Buena Vista Trading Company<br>Disney Credit Card Services, Inc.<br>Disney Destinations, LLC<br>Disney Direct Response Publishing, Inc.<br>Disney Online<br>Disney Interactive Studios, Inc.<br>Disney Shopping, Inc.<br>Disney Vacation Club Hawaii Management Company, LLC<br>Disney Vacation Club Management Corp.<br>Disney Vacation Development, Inc.<br>DVD Financing, Inc.<br>ESPN Enterprises, Inc.<br>ESPN Magazine, LLC<br>ESPN Productions, Inc.<br>ESPN/Starwave Partners<br>International Family Entertainment, Inc.<br>Magical Cruise Company, Limited<br>Palm Financial Services, Inc.<br>Walt Disney Parks and Resorts Online<br>Walt Disney Parks and Resorts U.S., Inc.<br>Walt Disney Travel Co., Inc.<br></div><br><br><div align="right"> <a href="http://corporate.disney.go.com/corporate/pp.html" name="lid=corp_pp_california/contentlink/link2/110822">Back to Privacy Policy</a>
+</div></td></tr></table>
+
