@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding:utf8 -*-
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #
 # This file is to replicate the response of a database response.
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- #

@@ -12,11 +12,8 @@
 
 # Eventually pull the sites directory from the DB
 
-from sites_dict import sites
-from lxml import html, etree
-from Markdownipy import Markdownipy
-from git import *
 import codecs
+import datetime
 import logging
 import hashlib
 import os
@@ -25,11 +22,22 @@ import subprocess
 import urllib2
 import urlparse
 
+from git import *
+from lxml import html, etree
+from Markdownipy import Markdownipy
+
+from tosPolicy.models import Organization
+from tosPolicy.models import PolicyDocument
+from tosPolicy.models import PolicyVersion
+from tosPolicy.models import PolicyParagraph
+from tosPolicy.models import PolicySentence
+from tosCrawl.sites_dict import sites
+
 # Set our Unicode enconding of choice
 UNICODE_ENCODING = 'utf-8'
 
 ## Define function execution statuses
-## 2xx are successful, 3xx are completion with warnings, and 4xx are 
+## 2xx are successful, 3xx are completion with warnings, and 4xx are
 ## non-completion with errors
 ## Question, are 4xx statuses needed, since we have exceptions?
 
@@ -47,7 +55,7 @@ DOCUMENTS_DIR = REPO_DIR + "documents/"
 class UrlNotFound(Exception): pass
 class XpathNotFound(Exception): pass
 
-logging.basicConfig(filename='scrape.log', 
+logging.basicConfig(filename='scrape.log',
                     level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d-%y %H:%M:%S')
@@ -75,24 +83,24 @@ def getCurrentDatetime():
 
 def saveMdToDisk(md, filenameBase, datetime):
     """
-        Saves the passed Markdown string to a file named in the following 
+        Saves the passed Markdown string to a file named in the following
         format: filenameBase_datetime.md
 
-        Files will be saved using the Unicode Encoding specified by 
+        Files will be saved using the Unicode Encoding specified by
         UNICODE_ENCODING
-        
+
         If a  file already exists with the filename base and datetime provided,
-        nothing will be written to disk, and the function will return an 
+        nothing will be written to disk, and the function will return an
         MD_ALREADY_EXISTS status.
 
-        Input: 
+        Input:
             md: A unicode containing the Markdown representation of a document's
                 text
             filenameBase: A string containing the base of the document's
                 filename
-            datetime: A string containing the datetime that will be used for 
+            datetime: A string containing the datetime that will be used for
                 the document's file
-        
+
         Output: An integer representing a function execution status
     """
     # Type checking
@@ -123,24 +131,24 @@ def saveMdToDisk(md, filenameBase, datetime):
 
 def saveHtmlToDisk(html, filenameBase, datetime):
     """
-        Saves the passed HTML string to a file named in the following 
+        Saves the passed HTML string to a file named in the following
         format: filenameBase_datetime.md
-        
-        Files will be saved using the Unicode Encoding specified by 
+
+        Files will be saved using the Unicode Encoding specified by
         UNICODE_ENCODING
 
         If a  file already exists with the filename base and datetime provided,
-        nothing will be written to disk, and the function will return an 
+        nothing will be written to disk, and the function will return an
         HTML_ALREADY_EXISTS status.
 
-        Input: 
+        Input:
             html: A string containing the HTML representation of a document's
                 text
             filenameBase: A string containing the base of the document's
                 filename
-            datetime: A string containing the datetime that will be used for 
+            datetime: A string containing the datetime that will be used for
                 the document's file
-        
+
         Output: An integer representing a function execution status
     """
     # Type checking
@@ -163,7 +171,7 @@ def saveHtmlToDisk(html, filenameBase, datetime):
     if os.path.isfile(filename):
         return HTML_ALREADY_EXISTS
 
-    # Probably some efficency issues with buffers or what not that 
+    # Probably some efficency issues with buffers or what not that
     # I don't know about.
     f = codecs.open(filename, 'w', UNICODE_ENCODING)
     f.write(html)
@@ -181,9 +189,9 @@ def saveTestCase(tosDoc, md, filename):
     saveHtmlToDisk(tosDoc, filename, fileTime)
 
     return SUCCESS
-    
+
 def setGitVars():
-    global git_stage, git_hct, git_docs_tree, git_html_tree, git_md_tree 
+    global git_stage, git_hct, git_docs_tree, git_html_tree, git_md_tree
 
     git_stage = git_repo.index
     git_hct = git_repo.head.commit.tree
@@ -210,7 +218,7 @@ def gitAdd(filename):
 
         Variables that control the repo location and attribution are at the top of the file.
     """
-    cmd = ['git', 
+    cmd = ['git',
             '-c', 'user.name=\'' + GIT_USER_NAME + '\'',
             '-c', 'user.email=\'' + GIT_USER_EMAIL + '\'',
             'add', filename]
@@ -254,7 +262,7 @@ def fetch(org, doc):
         raise ValueError(org + " was not found in the sites directory")
     if not doc in sites[org]:
         raise ValueError(doc + " was not found in sites['" + org + "']")
-        
+
     # Need to set the agentString, as some sites get snotty with uncommon agents
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
@@ -268,7 +276,7 @@ def fetch(org, doc):
     elif socket.code == 403:
         raise UrlNotFound('403: The page %(url)s is forbidden.' % {'url':sites[org][doc]['url']})
     charset = UNICODE_ENCODING
-    if socket.headers.getparam('charset'): charset = socket.headers.getparam('charset') 
+    if socket.headers.getparam('charset'): charset = socket.headers.getparam('charset')
     tosDoc = socket.read()
     socket.close()
 
@@ -281,14 +289,14 @@ def listify(text):
     """
         Input: A string of text
         Output: A list of lists of strings. Each element of the root list
-                represents a paragraph. Each element of the sub lists 
+                represents a paragraph. Each element of the sub lists
                 represents a sentence.
                 Newlines are maintained in the output
     """
 
-    if not isinstance(text, str):
+    if not isinstance(text, unicode):
         raise ValueError("Expecting str")
-    
+
     import nltk.data
     sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     paras = text.splitlines(True)
@@ -297,11 +305,13 @@ def listify(text):
 
     return paras
 
-# Here for testing, and to be an example as to how to fetch and process a page with legalese
-# org is a key in the sites directory (see sites_dict.py)
-# doc is a key in the sites[org] directory
-# t is an instance of Markdownipy
 def fetchAndProcess(org, doc, t):
+    """ Here for testing, and to be an example as to how to
+        fetch and process a page with legalese
+        org is a key in the sites directory (see sites_dict.py)
+        doc is a key in the sites[org] directory
+        t is an instance of Markdownipy
+    """
     try:
         (tosHtml, real_url) = fetch(org, doc)      # Retrieve the string of HTMl that makes up the page
 
@@ -319,10 +329,10 @@ def fetchAndProcess(org, doc, t):
         tosDom.rewrite_links(link_repl)
 
         # Search for the element that contains text. The result of .xpath() is a list of lxml.html.HtmlElements
-        xpathResults = tosDom.xpath(sites[org][doc]['xpath']) 
-        
+        xpathResults = tosDom.xpath(sites[org][doc]['xpath'])
+
         if len(xpathResults) == 0:
-            raise XpathNotFound('The xpath query for ' + org + " : " + doc + ' yielded zero results') 
+            raise XpathNotFound('The xpath query for ' + org + " : " + doc + ' yielded zero results')
         divHTML = ''
         for rlt in xpathResults:
             if isinstance(rlt, etree.ElementBase):
@@ -352,10 +362,14 @@ def fetchAndProcess(org, doc, t):
             writeMdHtml(filenames, md, divHTML)
             gitAdd(gitpaths[0])
             gitAdd(gitpaths[1])
-            gitCommit("Added " + org + " : " + doc)
-            setGitVars()
-            print "Added a new document"
-        elif isNewVersion(md, filenames[0]): 
+            #gitCommit("Added " + org + " : " + doc)
+            #setGitVars()
+            print "Added a new document to files"
+
+            save_document(org, doc, md)
+
+
+        elif isNewVersion(md, filenames[0]):
             # Existing document that is updated
             writeMdHtml(filenames, md, divHTML)
             gitAdd(gitpaths[0])
@@ -363,6 +377,7 @@ def fetchAndProcess(org, doc, t):
             gitCommit("Updated " + org + " : " + doc)
             setGitVars()
             print "Updated a document"
+            save_document(org, doc, md)
         else:
             print "No changes"
 
@@ -373,6 +388,45 @@ def fetchAndProcess(org, doc, t):
         logging.error(e)
     return None
 
+def save_document(org, doc, md):
+    print "org " + org
+    print "doc " + doc
+    print "md " + md[:30]
+    _org = Organization.objects.get_or_create(name=org)
+    print "made an org: " + org
+
+    print _org
+    _doc = PolicyDocument.objects.get_or_create(orgid=_org[0],
+                documentPath=sites[org][doc]['xpath'],
+                title=doc,
+                url=sites[org][doc]['url'])
+
+    _version = PolicyVersion.objects.get_or_create(docid=_doc[0],
+                checkSum=hashlib.md5(md))
+    # update the 'last checked'
+    _version[0].save()
+
+    last_para = None
+    last_sent = None
+    paragraphs = listify(md)
+    for p in paragraphs:
+        _para = PolicyParagraph()
+        _para.versionId = _version[0]
+        if last_para != None:
+            _para.previous = last_para
+        _para.save()
+        last_para = _para
+
+        for sent in p:
+            _sent = PolicySentence()
+            _sent.version = _version[0]
+            _sent.text = sent[0]
+            _sent.checkSum = hashlib.md5(sent[0])
+            if last_sent != None:
+                _sent.previous = last_sent
+            _sent.save()
+            last_sent = _sent
+
 def checkAll(t):
     for org in sites:
         for doc in sites[org]:
@@ -380,11 +434,19 @@ def checkAll(t):
             md = fetchAndProcess(org, doc, t)
             if md: print "Sucess"
             else: print "Failed"
-    
+
 
 # FIXME: if this can be replaced by the instance in the if name = main, then it should be
 t = Markdownipy(True,False)
 
 if __name__=='__main__':
+    print "#" * 80
+    print "#"
+    print "# FriendlyTos ToS crawler"
+    print "#"
+    print "# This must be run from the frndlytos directory"
+    print "#"
+    print "#" * 80
+
     t = Markdownipy(True,False)
     checkAll(t)
