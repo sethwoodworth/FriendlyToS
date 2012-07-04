@@ -141,9 +141,9 @@ Twitter, Inc.
 
 Attn: Copyright Agent
 
-795 Folsom Street, Suite 600
+1355 Market Street, Suite 900
 
-San Francisco, CA 94107
+San Francisco, CA 94103
 
 Email: [copyright@twitter.com](mailto:copyright@twitter.com)
 ###10. Ending These Terms
@@ -242,11 +242,11 @@ We may revise these Terms from time to time, the most current version will alway
 
 
 
-These Services are operated and provided by Twitter Inc., 795 Folsom Street, Suite 600, San Francisco, CA 94107. If you have any questions about these Terms, please [contact us](https://twitter.com/about/contact).
+These Services are operated and provided by Twitter Inc., 1355 Market Street, Suite 900, San Francisco, CA 94103. If you have any questions about these Terms, please [contact us](https://twitter.com/about/contact).
 
 
 
-*Effective: May 17, 2012*
+*Effective: June 25, 2012*
 
 
 

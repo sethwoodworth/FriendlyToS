@@ -83,7 +83,6 @@ LOGOUT_URL          = '/accounts/signout/'
 USERENA_DEFAULT_PRIVACY = 'closed'
 
 AUTHENTICATION_BACKENDS = (
-    'userena.backends.UserenaAuthenticationBackend',
     'guardian.backends.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
 )

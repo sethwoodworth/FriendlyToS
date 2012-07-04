@@ -274,7 +274,7 @@
 
       * 7-day replacement or refund guarantee on all CPUs, including Open Box processors.                     All other Open Box merchandise has a 15-day warranty period.
       * For CPUs, the base cost will reflect the current market value, and the 15% restocking                     fee will be applied after this adjustment.
-      * Downloadable software is refundable within 15 days of the original invoice date.             Newegg.com             will confirm that the product has not been downloaded and, upon verification, the             customer will be issued a letter of destruction. Once he/she agrees to the terms             stipulated in the letter,             Newegg.com             will issue a Return Merchandise Authorization number for the refund amount.
+      * Downloadable software may not be exchanged or returned for a refund after purchase.
       * DVDs are non-refundable but may be exchanged for a functional version of the same                     film by using the pre-paid shipping label packaged with your order.
       * Marketplace: If you purchase an item from a Newegg Marketplace seller and need to return it,           you must return that item to the Marketplace seller rather than to Newegg. In general, Newegg           Marketplace sellers will honor Newegg's Money Back Guarantee and Return Policy set forth above.           However, certain exceptions may apply.  Check the Seller's Policy Page for the return policies           of individual Marketplace sellers.  In the event of a conflict between Newegg's return policies           and those on a Seller's Policy Page, the Seller's Policy Page return polices shall apply to your           orders from that seller.
 
@@ -559,7 +559,7 @@
 
 
       * 7-day refund/replacement guarantee on Retail, OEM and Open Box processors. All other                     Open Box merchandise has a 15-day warranty period. All refunds on processors will                     be subjected to a 15% restocking fee to reflect the current market value.
-      * Downloadable software has no physical assets. A letter of destruction with confirmation                     from Digital River that the product has not been downloaded is required within                     15-days for refund approval.
+      * Downloadable software may not be exchanged or returned for a refund after purchase.
       * DVDs are non-refundable and may be exchanged within 30-days of the invoice date                     for the same item only through Baker & Taylor via a shipping label included                     with their original delivery.
       * If you wish to return a Bundle Special for a refund, you must return the ENTIRE                     BUNDLE within 30 days of purchase. Note that a 15% restocking fee will be applied.                     Components within a Bundle Special may be returned for repair/replacement only.                     Individual items may only be returned for repair/replacement if an RMA number is                     acquired within the Return Policy period.
       * Manufacturer Kits are different than bundles as they are arranged by the brand/manufacturer                     and will only have one item number. Warranty guidelines have yet to be stipulated.
@@ -1142,9 +1142,13 @@ Table Of Contents
   Downloadable Software Replacement Only Return Policy
 
       * Return for refund within: non-refundable
-      * Return for replacement within: non-replaceable
+      * Return for replacement within: 30 days (for partial downloads only)
 
-      All sales of Applications are final. We do not accept returns of downloadable software. Software may require you to use a computer or other device meeting minimum system requirements, and you are responsible for ensuring that your computer or device meets Software system requirements prior to purchase. Generally, Software system requirements are available on or from product detail pages. Once you have purchased a downloadable product, we encourage you to download it, if applicable, and to access it promptly to ensure that you have received it. You are responsible for downloading and confirming your ability to access software within thirty (30) days after purchase and bear all risk of loss thereafter, including any loss due to a computer or hard drive crash. We will usually continue to make purchased software available in the Newegg Order History Page for additional activations or copies even after this thirty (30) day period, but we may, from time to time, remove without notice because of the Software provider's licensing restrictions or for other reasons. Newegg will not be liable to you if any Software is removed from the Newegg Order History Page or otherwise becomes unavailable for additional activation or copies. If you are unable to successfully download or access an Application after having reviewed our online help resources, please contact Newegg customer service.
+      Products that state "*This item is covered by Newegg.com's Headphones Return Policy*", or items labeled as "Non-refundable" (or similar labeling) must be returned to Newegg **within 30 days of the invoice date**for this policy to apply. Products covered by this reutrn policy may only be returned for a replacement of the same or equivalent item. “Return” constitutes receipt of the product by Newegg, and not the mere issuance of an RMA.
+
+
+
+      Downloadable software is non-returnable. The only exception to this policy is if a partial download has occurred and this can be verified through our downloadable software provider Digital River.
 
       <a name="37"></a>
 
@@ -1551,4 +1555,22 @@ NOTE: For televisions above 37 inches: An adult (age 18 or older) is required to
       * Restocking Fee: No
 
       This is our Extended Return Policy. Items covered by this policy (those products for which Newegg states "This item may be returned for refund within 45 days only") must be returned to Newegg within 45 days of the invoice date for this policy to apply. Products covered by this return policy may only be returned for a replacement of the same or equivalent item after 45 days of the invoice date for one year. “Return” constitutes receipt of the product by Newegg, and not the mere issuance of an RMA.
+
+      <a name="61"></a>
+
+  VGA Special Return Policy
+
+      * Return for refund within: 15 days (must be unopened) from the invoice date
+      * Replacement for defective: will require pre-authorization with proof from manufacture for Newegg RMA replacement to be authorized within 15 days from the invoice date. For support on this product, please contact NVIDIA at 1-847-550-1954
+
+      This is our Special 15-Day Return Policy. Items covered by this policy (those products for which Newegg states "This item may be returned for a replacement or refund within 15 days only") must be returned to Newegg within 15 days of the invoice date for this policy to apply. “Return” constitutes receipt of the product by Newegg, and not the mere issuance of an RMA.
+
+
+
+      The following conditions are not acceptable for return, and will result in the merchandise you have returned to Newegg being returned to you:
+
+      * Cards exhibiting physical damage
+      * Cards that are missing the manufacturer label containing model number, part number or serial number
+      * Cards that are missing the manufacturer warranty label
+      * Cards returned without all included accessories, bonus games, and documentation
 

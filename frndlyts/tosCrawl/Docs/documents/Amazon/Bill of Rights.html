@@ -78,7 +78,7 @@
 
 
 
-                                                                                                                                          
+                                                                                                                                           
 
 
 
@@ -96,80 +96,4 @@
 
 
 
-<script type="text/javascript">
-
-var searchAheadJS = {};
-searchAheadJS.textFieldChanged = false;
-
-searchAheadJS.removeText = function( context, default_value ) {
-    jQuery(context).removeClass('default-text').addClass('focus-text');
-    if(context.value === default_value) {
-      context.value = '';
-    }
-};
-
-searchAheadJS.addText = function( context, default_value ) {
-    if(context.value === '') {
-      jQuery(context).removeClass('focus-text').addClass('default-text');
-      context.value = default_value;
-    }
-};
-
-searchAheadJS.buildUiChangeFuncList = function () {
-    searchAheadJS.textFieldFocusFunctions = [
-        searchAheadJS.removeText
-    ];
-    
-    searchAheadJS.textFieldBlurFunctions = [
-        searchAheadJS.addText
-    ];
-};
-
-amznJQ.onReady('JQuery', function() {
-
-   searchAheadJS.buildUiChangeFuncList();
-   var helpSearchInput = jQuery('#helpsearch');
-   var default_value = 'Topic or Keyword';
-   if(helpSearchInput.val() === '') {
-       helpSearchInput.addClass( 'default-text'  );
-       helpSearchInput.attr('value', default_value);
-   }
-   
-   helpSearchInput.each(function() {
-     var input = jQuery(this);
-     input.focus(function() {
-           var curContext = this;
-           jQuery.each( searchAheadJS.textFieldFocusFunctions, 
-               function ( index, textFieldFocusFunction ) {
-                    textFieldFocusFunction(curContext, default_value);
-               });
-                    
-     });
-     input.blur(function() {
-           var curContext = this;
-           jQuery.each( searchAheadJS.textFieldBlurFunctions, 
-               function ( index, textFieldBlurFunction ) {
-                    textFieldBlurFunction(curContext, default_value);
-               });
-
-     });
-     input.keyup( function() {
-         this.value === '' ? 
-            searchAheadJS.textFieldChanged = false :
-                searchAheadJS.textFieldChanged = true;
-     });
-   });
-
-   jQuery('#search-help').submit( function () {
-        if ( (helpSearchInput.val() !== '') && 
-            searchAheadJS.textFieldChanged ) {
-            return true;
-        } else {
-            return false;
-        }
-      }
-    );
-   
- });
-
-</script>
+ 
