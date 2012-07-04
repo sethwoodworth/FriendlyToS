@@ -15,6 +15,8 @@ class PolicyDocument(models.Model):
     """
     Policy Document. Can be many documents per organization.
     """
+    # TODO: fkeys create name_id to refer to the pkey
+    # the id part of orgid is redundant
     orgid           = models.ForeignKey('Organization')
     documentPath    = models.CharField(max_length=255)      # this might just be a textfield
     title           = models.CharField(max_length=100)      # What the org calls this document (privacy policy, terms of service, other)
@@ -30,9 +32,10 @@ class PolicyVersion(models.Model):
     docid           = models.ForeignKey('PolicyDocument')
     # I think we can get by following fkeys backwards, don't need bidirectional fkeys
     #firstParagraph  = models.ForeignKey('PolicyParagraph')
-    dateAdded       = models.DateTimeField()                # when we saw/saved the policy update
+    dateAdded       = models.DateTimeField(auto_now=True)                # when we saw/saved the policy update
     # TODO: checkSum MUST be unique, what are we doing here?
     checkSum        = models.CharField(max_length=100, unique=True)      # longer than we need
+    full_text       = models.TextField()
 
 class PolicyParagraph(models.Model):
     """
@@ -51,8 +54,9 @@ class PolicySentence(models.Model):
     """
     Store each sentence of the policy, with references to PolicyVersion.
     """
-    paragraphId     = models.ForeignKey('PolicyParagraph')  # must be owned by a Paragraph
-    previous        = models.ForeignKey('PolicySentence', null=True, blank=True)
+    version         = models.ForeignKey('PolicyVersion', null=True, blank=True, related_name='sentences')
+    paragraphId     = models.ForeignKey('PolicyParagraph', null=True, blank=True)  # must be owned by a Paragraph
+    previous        = models.ForeignKey('PolicySentence', null=True, blank=True, related_name='next')
     text            = models.TextField()                    # The actual content! (finally)
     checkSum        = models.CharField(max_length=100)      # longer than we need
 
