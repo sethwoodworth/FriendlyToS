@@ -8,6 +8,8 @@
 #
 # Requires nltk and and punkt via nltk.download()
 #
+# Requires command line git installed, and gitpython (easy_install gitpython)
+#
 # .xpath(query) will return a list of lxml.html.HtmlElement
 
 # Eventually pull the sites directory from the DB
