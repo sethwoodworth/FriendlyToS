@@ -2,3 +2,6 @@ django-guardian
 easy_thumbnails
 lxde
 gitpython
+lxml
+pyyaml
+nltk
