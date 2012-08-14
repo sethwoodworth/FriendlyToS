@@ -23,6 +23,17 @@ TODOs
  * Decide when a paragraph has changed enough to be considered a different paragraph instead of merly a revision of a paragraph.
  * Decide if and how comments on a paragraph will relate to later versions of that paragraph.
 
+### Installation Requirements ###
+ * OS packages
+   * python-lxml
+     * *or* libxml2-dev and libxslt1-dev plus lxml in requirements.txt (haven't tried this yet)
+   * git
+ * Python
+    * Use requirements.txt
+    * nltk punkt
+      * Use nltk.download() in an interactive session to download the punkt package
+ 
+
 ### Database ###
 Database diagram at https://cacoo.com/diagrams/DFHkFqrvdvr863xi
 
