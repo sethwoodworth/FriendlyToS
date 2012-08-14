@@ -1,15 +1,6 @@
 #!/usr/bin/python
 # -*- coding:utf8 -*-
 
-# Testing lxml and urllib here.
-#
-# Requires lxml - install via http://lxml.de/installation.html#installation or
-# your distro's package manager
-#
-# Requires nltk and and punkt via nltk.download()
-#
-# Requires command line git installed, and gitpython (easy_install gitpython)
-#
 # .xpath(query) will return a list of lxml.html.HtmlElement
 
 # Eventually pull the sites directory from the DB
@@ -373,6 +364,8 @@ def fetchAndProcess(org, doc, t):
         logging.warning(e)
     except (IOError) as e:
         logging.error(e)
+    except (CalledProcessError) as e:
+        logging.error('Command Line Execution\n\tReturn Code:' + e.returncode + '\n\tOutput' + e.output)
     return None
 
 def checkAll(t):
